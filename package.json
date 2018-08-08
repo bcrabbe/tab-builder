@@ -9,7 +9,8 @@
     "jss-preset-default": "^4.5.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "ultimate-guitar-scraper": "^1.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
