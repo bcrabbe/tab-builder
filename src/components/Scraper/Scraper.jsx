@@ -104,7 +104,6 @@ class App extends Component {
   
   render() {
     const {classes} = this.props;
-    console.log(this.state.tab);
     return (
       <div className={classes.root}>
         <h3>Scraper</h3>

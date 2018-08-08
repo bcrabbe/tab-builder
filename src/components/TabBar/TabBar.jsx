@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 //x = scale*y
 const scale = 2;
-const width = 7;
+let width = 7;
 const styles = theme => ({
   root: {
     width: `${scale*width}rem`,
@@ -108,12 +108,13 @@ class TabBar extends Component {
 
   render() {
     const {classes} = this.props;
+    const rootStyle = {
+      width: this.props.width+"rem",
+    };
     return (
       <div className={this.props.className || classes.root}
            ref={this.rootElem}
-           style={{
-
-           }}>
+           style={rootStyle}>
         <svg
           onClick={this.onClick}
           onMouseOver={this.onHover}
