@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import ugs from 'ultimate-guitar-scraper';
+import TabDisplay from '../TabDisplay.jsx';
+import Parser from './parser.js';
+import testTab2 from './testRaw.json';
 
 const styles = theme => ({
   root: {
@@ -9,6 +11,11 @@ const styles = theme => ({
     padding: 20
   },
   resultCard :{
+    margin: 20,
+    borderStyle: "solid",
+    padding: 20
+  },
+  tabDisplay: {
     margin: 20,
     borderStyle: "solid",
     padding: 20
@@ -23,8 +30,9 @@ class App extends Component {
       query: "",
       searchResults: [],
       tab: undefined,
+      parser: new Parser(),
+      format: false,
     };
-    this.display();
   }
 
   search = (query) => {
@@ -41,21 +49,17 @@ class App extends Component {
     ).then(
       res => {
         this.setState({tab: res});
-        console.log(res);
+        console.log(JSON.stringify(res));
+        this.state.parser.parse(res.content.text);
       }
     ).catch(err => console.error(err));
-  }
-
-  display = function(result, key) {
-    this.hello = "display";
-    console.log(this);
   }
 
   displayLoadButton = (url) => {
     return (
       <input type="submit"
              onClick={(e) => this.get(url)}
-        value="Search tab" />
+        value="Load it up" />
     );
   }
 
@@ -76,9 +80,43 @@ class App extends Component {
     (result, ind) => this.resultDisplay(result, ind)
   )
 
-  tabDisplay = (tab)  => {
+  tabFormatToggle = () => (
+    <label>
+      format
+      <input type="checkbox"
+             onChange={
+               e => this.setState(prevState => ({format: !prevState.format}))
+        }/>
+    </label>
+  )
+
+  tabDisplay = (tab) => {
     return (
-      <pre>{tab.content.text}</pre>
+      <div className={this.props.classes.tabDisplay}>
+        {this.tabFormatToggle()}
+        {
+          this.state.format ?
+            this.formattedTabDisplay(tab) :
+            this.rawTabDisplay(tab)
+        }
+
+      </div>
+    );
+  }
+
+  formattedTabDisplay = (tab) => {
+    const parsedTab = this.state.parser.parse(tab.content.text);
+    return (
+      <TabDisplay tab={parsedTab}/>
+    )
+  }
+  
+  rawTabDisplay = (tab) => {
+    return (
+      <div>
+        <h3>Raw</h3>
+        <pre>{tab.content.text}</pre>
+      </div>
     );
   }
 
@@ -101,6 +139,17 @@ class App extends Component {
         value="back to results" />
     );
   }
+
+  parserTestButton = () => {
+    return (
+      <input type="submit"
+             onClick={(e) =>{
+               const {testTab, parsed} = this.state.parser.test2();
+               this.setState({tab:testTab});
+        }}
+        value="hereComestheblues test" />
+    );
+  }
   
   render() {
     const {classes} = this.props;
@@ -119,6 +168,7 @@ class App extends Component {
               this.resultsDisplay(this.state.searchResults)
           }
         </div>
+        {this.parserTestButton()}
       </div>
     );
   }

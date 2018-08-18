@@ -21,8 +21,7 @@ class TabBar extends Component {
     };
     this.rootElem = React.createRef();
     this.svgRef = React.createRef();
-
-    console.log(this.state.stringPositions);
+    //consolelog(this.state.stringPositions);
     this.onClick = this.onClick.bind(this);
     this.onHover = this.onHover.bind(this);
     this.mouseLeave = this.mouseLeave.bind(this);
@@ -36,7 +35,7 @@ class TabBar extends Component {
       y:  padding
     };
     for(let s=0; s<6; ++s) {
-      console.log(s);
+      //consolelog(s);
       string[s] = {
         x1: 0,
         x2: 1,
@@ -93,7 +92,7 @@ class TabBar extends Component {
     return 5;
   }
 
-  closestBetweenTwo = (y,sY,s1Y) => {
+  closestBetweenTwo = (y, sY, s1Y) => {
     const midPoint = sY + ((s1Y-sY)/2);
     if (y>midPoint){
       return 1;
@@ -108,13 +107,11 @@ class TabBar extends Component {
 
   render() {
     const {classes} = this.props;
-    const rootStyle = {
-      width: this.props.width+"rem",
-    };
+
     return (
       <div className={this.props.className || classes.root}
            ref={this.rootElem}
-           style={rootStyle}>
+           style={this.props.style}>
         <svg
           onClick={this.onClick}
           onMouseOver={this.onHover}
@@ -138,7 +135,6 @@ class TabBar extends Component {
 
               this.state.stringPositions.map(
                 (string, number) =>
-
                   <line
                       key={`str${number}`} y2={string.y} y1={string.y}
                       x1={string.x1} x2={string.x2}

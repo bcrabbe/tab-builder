@@ -1,19 +1,12 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import TabBar from '../TabBar/TabBar.jsx';
-import Scraper from '../Scraper/Scraper.jsx';
+import TabBar from './TabBar/TabBar.jsx';
 import { withStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/lab/Slider';
 
 
-const barWidth = 15;
 const styles = theme => ({
-  tabBar: {
-    width: `${barWidth}rem`,
-    display:"inline-block"
-  },
   page: {
-    maxWidth: `${4*barWidth}rem`,
+    maxWidth: `${4*15}rem`,
     borderStyle: 'solid',
     margin:"5%",
     padding:"5%",
@@ -21,27 +14,20 @@ const styles = theme => ({
   }
 });
 
-class App extends Component {
+class TabDisplay extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bars: [0,1,2,3,4,5,6,7],
       barWidth: 15
     };
-
-    //consolelog(this);
-  }
-
-  barClicked = (bar, string, xPos) => {
-    //consolelog(bar, string, xPos);
-
+    console.log(props);
   }
 
   changeWidth = (e, value) => {
     this.setState({barWidth: value});
   }
 
-  slider = () => {
+  sizeSlider = () => {
     return (
       <Slider
         style={{
@@ -59,32 +45,26 @@ class App extends Component {
     //consolelog(this.state.barWidth);
     return (
       <div>
-        <header>
-          <h1>tab-builder</h1>
-        </header>
-        <Scraper/>
-        <div className={classes.page}>
           <div>
-            {this.slider()}
+            {this.sizeSlider()}
           </div>
           {
-            this.state.bars.map(
+            this.props.tab.map(
               (bar, i) => (
                 <TabBar
                   onClick={this.barClicked}
                   barNumber={i}
                   style={{
-                    width: this.state.barWidth
+                    width: this.state.barWidth +"rem"
                   }}
                   width={this.state.barWidth}
-                  bar={this.state.bars[i]}
+                  bar={bar}
                   key={i}/>)
             )
           }
       </div>
-        </div>
     );
   }
 }
 
-export default withStyles(styles)(App);
+export default withStyles(styles)(TabDisplay);
