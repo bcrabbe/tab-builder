@@ -12,6 +12,9 @@ const styles = theme => ({
 
 class TabBar extends Component {
 
+  static defaultProps = {
+    lineWidth:1
+  }
 
   constructor(props) {
     super(props);
@@ -25,6 +28,7 @@ class TabBar extends Component {
     this.onClick = this.onClick.bind(this);
     this.onHover = this.onHover.bind(this);
     this.mouseLeave = this.mouseLeave.bind(this);
+    console.log(props);
   }
 
   initStrings = (padding) => {
@@ -105,6 +109,66 @@ class TabBar extends Component {
     this.setState({hoveredString:undefined});
   }
 
+  notesDisplay = () => {
+    notesForString = notesForString.bind(this);
+    noteJSX = noteJSX.bind(this);
+    const{bar} = this.props;
+    const notesJSX = [];
+    const numberOfStrings = bar.length;
+    for(let s=0; s<numberOfStrings; ++s){
+      var string = s;
+      notesJSX.push(notesForString(bar[s]));
+    }
+    return notesJSX;
+
+    function notesForString(string) {
+      return string.map(note => noteJSX(note));
+    }
+
+    function noteJSX({note, x}) {
+      const height = 0.07, width = note.length * 0.7*height;
+      return text(note, x, this.state.stringPositions[string].y + height/4, height);
+      // return (
+      //   <React.Fragment>
+      //     <rect fill="#fff" strokeWidth="0"
+      //           y={this.state.stringPositions[string].y - height/2}
+      //           x={x - width/4} height={height} width={width}>
+
+      //     </rect>
+      //     <text fontSize={height}
+      //           textAnchor="start"
+      //           x={x} y={this.state.stringPositions[string].y + height/4}>
+      //       {note}
+      //     </text>
+      //   </React.Fragment>
+      // );
+    }
+
+    function text(text, x, y, size) {
+      return (
+        <React.Fragment>
+          <text fontSize={size}
+                textAnchor="start"
+                x={x} y={y}
+                style={{
+                  stroke: "white",
+                  strokeWidth: "0.3em"
+                }}>
+            {text}
+          </text>
+          <text fontSize={size}
+                textAnchor="start"
+                x={x} y={y}
+                style={{
+                  fill: "black"
+                }}>
+            {text}
+          </text>
+        </React.Fragment>
+      );
+    }
+  }
+
   render() {
     const {classes} = this.props;
 
@@ -147,15 +211,18 @@ class TabBar extends Component {
         <line y2={this.state.stringPositions[0].y}
               y1={this.state.stringPositions[5].y}
               x1={1} x2={1} strokeWidth="0.01" stroke="#333" fill="non"/>
-          </g>
+        </g>
+        <g>
+        <title>notes</title>
+        {
+          this.notesDisplay()
+        }
+        </g>
         </svg>
       </div>
     );
   }
 }
 
-TabBar.defaultProps = {
-  lineWidth:1
-}
 
 export default  withStyles(styles)(TabBar);

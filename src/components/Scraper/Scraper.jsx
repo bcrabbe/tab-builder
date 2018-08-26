@@ -106,9 +106,10 @@ class App extends Component {
 
   formattedTabDisplay = (tab) => {
     const parsedTab = this.state.parser.parse(tab.content.text);
+    console.log(this.state.parser);
     return (
       <TabDisplay tab={parsedTab}/>
-    )
+    );
   }
   
   rawTabDisplay = (tab) => {

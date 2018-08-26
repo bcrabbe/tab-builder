@@ -12,7 +12,7 @@ export default class Parser {
     this.rawTab = tab;
     console.log(tab);
     const lines = this.getLines(tab);
-    //    console.log(lines);
+    console.log(lines);
     const textBars = this.getBars(lines);
     console.log(textBars);
     const barTabs = this.textBarsToTabBars(textBars);
@@ -26,18 +26,18 @@ export default class Parser {
 
   textBarToTabBar = (textBar) => {
     const tabBar = [];
-    for(let s=0; s<this.numberOfStrings; ++s){
+    for(let s=0; s<this.numberOfStrings; ++s) {
       const string = textBar[s];
       tabBar[s] = [];
-      for(let i=0, incr = string.substring(i).indexOf('-');
-          i<textBar[0].length &&
-          incr!==-1;
-          incr = string.substring(i).indexOf('-'),
-          i += incr+1){
+      let i=0;
+      while(i<string.length && i!==-1){
         if(string[i]!=='-') {
           const note = extractNote(string, i);
           const x = i/string.length;
           tabBar[s].push({note, x});
+          i = string.indexOf('-', i+1);
+        } else {
+          ++i;
         }
       }
     }

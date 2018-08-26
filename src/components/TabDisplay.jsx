@@ -39,7 +39,6 @@ class TabDisplay extends Component {
     );
   }
 
-
   render() {
     const {classes} = this.props;
     //consolelog(this.state.barWidth);
@@ -52,7 +51,6 @@ class TabDisplay extends Component {
             this.props.tab.map(
               (bar, i) => (
                 <TabBar
-                  onClick={this.barClicked}
                   barNumber={i}
                   style={{
                     width: this.state.barWidth +"rem"
