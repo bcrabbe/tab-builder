@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 //x = scale*y
-const scale = 2;
+const scale = 5;
 let width = 7;
 const styles = theme => ({
   root: {
@@ -13,7 +13,7 @@ const styles = theme => ({
 class TabBar extends Component {
 
   static defaultProps = {
-    lineWidth:1
+    lineWidth: 1
   }
 
   constructor(props) {
@@ -127,21 +127,7 @@ class TabBar extends Component {
 
     function noteJSX({note, x}) {
       const height = 0.07, width = note.length * 0.7*height;
-      return text(note, x, this.state.stringPositions[string].y + height/4, height);
-      // return (
-      //   <React.Fragment>
-      //     <rect fill="#fff" strokeWidth="0"
-      //           y={this.state.stringPositions[string].y - height/2}
-      //           x={x - width/4} height={height} width={width}>
-
-      //     </rect>
-      //     <text fontSize={height}
-      //           textAnchor="start"
-      //           x={x} y={this.state.stringPositions[string].y + height/4}>
-      //       {note}
-      //     </text>
-      //   </React.Fragment>
-      // );
+      return text(note, x, this.state.stringPositions[string].y + height/3, height);
     }
 
     function text(text, x, y, size) {
@@ -171,7 +157,6 @@ class TabBar extends Component {
 
   render() {
     const {classes} = this.props;
-
     return (
       <div className={this.props.className || classes.root}
            ref={this.rootElem}
@@ -196,7 +181,6 @@ class TabBar extends Component {
           <g id="fretBoardSvg">
             <title>strings</title>
             {
-
               this.state.stringPositions.map(
                 (string, number) =>
                   <line

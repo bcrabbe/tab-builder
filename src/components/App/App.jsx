@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import TabBar from '../TabBar/TabBar.jsx';
+import FretBoard from '../FretBoard.jsx';
 import Scraper from '../Scraper/Scraper.jsx';
 import { withStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/lab/Slider';
@@ -18,6 +19,10 @@ const styles = theme => ({
     margin:"5%",
     padding:"5%",
     display: "inline-block" ,
+  },
+  chord: {
+    width: "20rem",
+    height: "50rem"
   }
 });
 
@@ -25,34 +30,16 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bars: [0,1,2,3,4,5,6,7],
-      barWidth: 15
+      notes: [
+        [{fret:0}],
+        [{fret:1}],
+        [{fret:2}],
+        [{fret:2}],
+        [{fret:0}],
+        [{fret:0}]
+      ]
     };
-
-    //consolelog(this);
   }
-
-  barClicked = (bar, string, xPos) => {
-    //consolelog(bar, string, xPos);
-
-  }
-
-  changeWidth = (e, value) => {
-    this.setState({barWidth: value});
-  }
-
-  slider = () => {
-    return (
-      <Slider
-        style={{
-          width: '10rem'
-        }}
-        value={this.state.barWidth}
-        aria-labelledby="label"
-        onChange={this.changeWidth} />
-    );
-  }
-
 
   render() {
     const {classes} = this.props;
@@ -62,27 +49,12 @@ class App extends Component {
         <header>
           <h1>tab-builder</h1>
         </header>
+        <FretBoard
+          className={classes.chord}
+          notes={this.state.notes}
+          />
         <Scraper/>
-        <div className={classes.page}>
-          <div>
-            {this.slider()}
-          </div>
-          {
-            this.state.bars.map(
-              (bar, i) => (
-                <TabBar
-                  onClick={this.barClicked}
-                  barNumber={i}
-                  style={{
-                    width: this.state.barWidth
-                  }}
-                  width={this.state.barWidth}
-                  bar={this.state.bars[i]}
-                  key={i}/>)
-            )
-          }
       </div>
-        </div>
     );
   }
 }
