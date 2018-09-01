@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as R from 'ramda';
 import { withStyles } from '@material-ui/core/styles';
-
+import StrokedText from './StrokedText.jsx';
 const styles = theme => ({
   root: {
   },
@@ -16,9 +16,11 @@ const styles = theme => ({
   },
   noteCircle: {
     r: "0.02rem",
-    fill: "#fff",
-    strokeWidth: "0.0007rem",
     stroke: "#000",
+  },
+  noteLabel:{
+    fontSize: '0.01rem',
+    fill: "#000",
   }
 });
 
@@ -40,7 +42,6 @@ class FretBoard extends Component {
 
   static propTypes = {
     notes: PropTypes.array.isRequired,
-
   };
 
   constructor(props) {
@@ -132,7 +133,7 @@ class FretBoard extends Component {
         key={s}
         />
     );
-    return R.map(stringJSX, R.range(0, this.state.strings.length));
+    return <g>{R.map(stringJSX, R.range(0, this.state.strings.length))}</g>;
   }
 
   fretsJSX = () => {
@@ -145,14 +146,18 @@ class FretBoard extends Component {
         key={f}
         />
     );
-    return R.map(fretJSX, R.range(0, this.state.frets.length));
+    return <g>{R.map(fretJSX, R.range(0, this.state.frets.length))}</g>;
   }
 
   positioningUtils = () => {
-    const y_f = R.flip(R.nth)(frets);
+    const y_f = R.flip(R.nth)(this.state.frets);
     const f_n = R.prop('fret');
     const y_n = R.compose(y_f, f_n);
-    const y_nsub1 = R.compose(y_f, R.dec, f_n);
+    const y_nsub1 = R.ifElse(
+      R.pipe(f_n, R.equals(0)),
+      y_n,
+      R.compose(y_f, R.dec, f_n)
+    );
     const cy_n = n => y_nsub1(n) + (y_n(n) - y_nsub1(n))/2;
     return {
       y_f, f_n, y_n, y_nsub1, cy_n
@@ -167,12 +172,33 @@ class FretBoard extends Component {
       R.map(noteJSX(string), notes),
     );
     const noteJSX = R.curry((s, n) => {
-
+      return this.noteLabelJSX(s, n);
     });
     return R.reduce(stringReducer, [], Object.entries(this.props.notes));
   }
 
-  notesCircleJSX = (s, n) => {
+  noteLabelJSX = (s, n) => {
+    const {strings, frets} = this.state;
+    const {notes, classes} = this.props;
+    const {y_f, f_n, y_n, y_nsub1, cy_n} = this.positioningUtils();
+    const text = (
+      <text
+        xmlns="http://www.w3.org/2000/svg"
+        textAnchor="middle"
+        x={strings[s]}
+        y={cy_n(n)}
+        className={classes.noteLabel}>
+        {f_n(n)}
+      </text>
+    );
+    return (
+      <StrokedText
+        key={R.join('',[s, f_n(n)])}
+        text={text} />
+    );
+  }
+
+  noteCircleJSX = (s, n) => {
     const {strings, frets} = this.state;
     const {notes, classes} = this.props;
     const {y_f, f_n, y_n, y_nsub1, cy_n} = this.positioningUtils();
@@ -195,29 +221,26 @@ class FretBoard extends Component {
       width: X,
       height: Y
     };
-  //consolelog(this.state.barWidth);
+    //consolelog(this.state.barWidth);
+    console.log(this.notesJSX());
     return (
       <svg
         className={this.props.className || classes.root}
         viewBox={`0 0 ${this.state.X}  ${this.state.Y}`}
         xmlns="http://www.w3.org/2000/svg"
         >
+        <title>fretboard</title>
         <g>
           <rect
             className={classes.background}
             {...canvasCoords}
             />
-        </g>
-        <g>
-          <title>vertical</title>
           {this.stringsJSX()}
-
-          <title>horizontal</title>
           {this.fretsJSX()}
-
-          <title>notes</title>
+        </g>
+        <title>notes</title>
+        <g>
           {this.notesJSX()}
-
         </g>
       </svg>
     );
