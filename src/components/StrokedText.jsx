@@ -9,7 +9,7 @@ const styles = theme => ({
   },
   stroke: {
     stroke: 'white !important',
-    strokeWidth: '0.009em !important'
+    strokeWidth: '0.007em !important'
   },
 
 });

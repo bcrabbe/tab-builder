@@ -152,9 +152,16 @@ class FretBoard extends Component {
   positioningUtils = () => {
     const y_f = R.flip(R.nth)(this.state.frets);
     const f_n = R.prop('fret');
-    const y_n = R.compose(y_f, f_n);
+    const y_n = R.pipe(
+      f_n,
+      R.ifElse(
+        R.equals('X'),
+        R.compose(y_f, R.always(0)),
+        R.compose(y_f)
+      )
+    );
     const y_nsub1 = R.ifElse(
-      R.pipe(f_n, R.equals(0)),
+      R.pipe(f_n, R.converge(R.or, [R.equals(0), R.equals('X')])),
       y_n,
       R.compose(y_f, R.dec, f_n)
     );
@@ -226,7 +233,7 @@ class FretBoard extends Component {
     return (
       <svg
         className={this.props.className || classes.root}
-        viewBox={`0 0 ${this.state.X}  ${this.state.Y}`}
+        viewBox={`0 0 ${this.state.X} ${this.state.Y}`}
         xmlns="http://www.w3.org/2000/svg"
         >
         <title>fretboard</title>
