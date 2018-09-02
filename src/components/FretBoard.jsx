@@ -51,7 +51,7 @@ class FretBoard extends Component {
     const padding = {
       left: X/20,
       right: X/20,
-      top: Y/10,
+      top: Y/7,
       bottom: Y/20
     };
     this.state = {
@@ -61,6 +61,7 @@ class FretBoard extends Component {
       topFret: 0,
       bottomFret: Y,
       numberOfStrings: this.props.notes.length,
+      fretsToDisplay: this.fretsToDisplay(),
     };
     this.state = {
       ...this.state,
@@ -82,7 +83,7 @@ class FretBoard extends Component {
   findFretsInNotes = () => {
     const {notes} = this.props;
     const initAcc = {min:24, max:0};
-    const noteReducer = ({min, max}, {fret}) => fret==="X" ? ({min, max}) : ({
+    const noteReducer = ({min, max}, {fret}) => fret==="X" || fret===0 ? ({min, max}) : ({
       min: fret < min ? fret : min,
       max: fret > max ? fret : max
     });
@@ -90,21 +91,21 @@ class FretBoard extends Component {
     return R.reduce(stringReducer, initAcc, notes);
   }
 
-  fretPositions = () => {
+  fretsToDisplay = () => {
     const {min, max} = this.findFretsInNotes();
     console.log(min, max);
-    const fretsToDisplay = {
+    return {
       min: min <= 2 ? 0 : min - 2,
       max: max + 1
     };
-    const {X, Y, padding} = this.state;
+  }
+
+  fretPositions = () => {
+    const {X, Y, padding, fretsToDisplay} = this.state;
     const heightFretboard = Y - padding.top - padding.bottom;
-    const numberOfFrets = R.converge(
-      R.subtract,
-      [R.prop('max'), R.prop('min')],
-    )(fretsToDisplay);
-    const y_f = f => padding.top + f * (heightFretboard/(numberOfFrets-1));
-    return R.map(y_f, R.range(0, numberOfFrets));
+    const numberOfFrets = fretsToDisplay.max - fretsToDisplay.min + 1;
+    const y_f = f => padding.top + (f-fretsToDisplay.min) * (heightFretboard/(numberOfFrets-1));
+    return R.map(y_f, R.range(0, fretsToDisplay.max+1));
   }
 
   drawChord = (chord) => {
@@ -123,10 +124,11 @@ class FretBoard extends Component {
   }
 
   stringsJSX = () => {
+    const {min, max} = this.state.fretsToDisplay;
     const stringJSX = (s) => (
       <line
-        y2={this.state.frets[0]}
-        y1={this.state.frets[this.state.frets.length-1]}
+        y2={this.state.frets[min]}
+        y1={this.state.frets[max]}
         x1={this.state.strings[s]}
         x2={this.state.strings[s]}
         className={this.props.classes.strings}
@@ -146,17 +148,19 @@ class FretBoard extends Component {
         key={f}
         />
     );
-    return <g>{R.map(fretJSX, R.range(0, this.state.frets.length))}</g>;
+    const {min, max} = this.state.fretsToDisplay;
+    return <g>{R.map(fretJSX, R.range(min, max+1))}</g>;
   }
 
   positioningUtils = () => {
+    const {min, max} = this.state.fretsToDisplay;
     const y_f = R.flip(R.nth)(this.state.frets);
     const f_n = R.prop('fret');
     const y_n = R.pipe(
       f_n,
       R.ifElse(
-        R.equals('X'),
-        R.compose(y_f, R.always(0)),
+        R.converge(R.or, [R.equals(0), R.equals('X')]),
+        R.compose(y_f, R.always(min)),
         R.compose(y_f)
       )
     );

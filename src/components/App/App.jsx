@@ -22,7 +22,7 @@ const styles = theme => ({
   },
   chord: {
     width: "20rem",
-    height: "50rem"
+    margin: 40
   }
 });
 
@@ -30,16 +30,65 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      notes: [
-        [{fret:'X'}],
-        [{fret:0}],
-        [{fret:2}],
-        [{fret:2}],
-        [{fret:2}],
-        [{fret:3}]
+      chords: [
+        [
+          [{fret:'X'}],
+          [{fret:0}],
+          [{fret:2}],
+          [{fret:2}],
+          [{fret:2}],
+          [{fret:3}]
+        ],
+        [
+          [{fret:3}],
+          [{fret:2}],
+          [{fret:0}],
+          [{fret:0}],
+          [{fret:3}],
+          [{fret:3}]
+        ],
+        [
+          [{fret:'X'}],
+          [{fret:0}],
+          [{fret:9}],
+          [{fret:8}],
+          [{fret:7}],
+          [{fret:7}]
+        ],
+        [
+          [{fret:2}],
+          [{fret:2}],
+          [{fret:3}],
+          [{fret:4}],
+          [{fret:2}],
+          [{fret:2}]
+        ],
+        [
+          [{fret:3}],
+          [{fret:3}],
+          [{fret:4}],
+          [{fret:5}],
+          [{fret:5}],
+          [{fret:3}]
+        ],
+        [
+          [{fret:1},],
+          [{fret:9}],
+          [{fret:10}],
+          [{fret:2}],
+          [{fret:5}],
+          [{fret:3}]
+        ]
       ]
     };
   }
+
+  chordJSX = (notes) => (
+    <FretBoard
+      className={this.props.classes.chord}
+      notes={notes}
+      />
+  )
 
   render() {
     const {classes} = this.props;
@@ -49,10 +98,7 @@ class App extends Component {
         <header>
           <h1>tab-builder</h1>
         </header>
-        <FretBoard
-          className={classes.chord}
-          notes={this.state.notes}
-          />
+        {this.state.chords.map(this.chordJSX)}
         <Scraper/>
       </div>
     );
