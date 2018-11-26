@@ -3,12 +3,6 @@ import { withStyles } from '@material-ui/core/styles';
 //x = scale*y
 const scale = 5;
 let width = 7;
-const styles = theme => ({
-  root: {
-    width: `${scale*width}rem`,
-    display:"inline-block"
-  }
-});
 
 class TabBar extends Component {
 
@@ -31,7 +25,7 @@ class TabBar extends Component {
     console.log(props);
   }
 
-  initStrings = (padding) => {
+  initStrings = padding => {
     const string = new Array();
     string[5] = {
       x1: 0,
@@ -170,43 +164,67 @@ class TabBar extends Component {
           viewBox={`0 0 1 1`} xmlns="http://www.w3.org/2000/svg">
           <g>
             <title>background</title>
-            <rect fill="#fff" id="canvas_background"
-                  height="100%" width="100%" y="0" x="0"/>
-            <g display="none" overflow="visible" y="0" x="0"
-               height="100%" width="100%" id="canvasGrid">
-              <rect fill="url(#gridpattern)" strokeWidth="0"
-                    y="0" x="0" height="100%" width="100%"/>
+            <rect
+              fill="#fff"
+              id="canvas_background"
+              width="100%" height="100%"
+              x="0" y="0"
+            />
+            <g
+              display="none"
+              overflow="visible"
+              x="0" y="0"
+              width="100%" height="100%"
+              id="canvasGrid"
+            >
+              <rect
+                fill="url(#gridpattern)"
+                strokeWidth="0"
+                x="0" y="0"
+                width="100%" height="100%"
+              />
             </g>
           </g>
           <g id="fretBoardSvg">
             <title>strings</title>
-            {
-              this.state.stringPositions.map(
-                (string, number) =>
-                  <line
-                      key={`str${number}`} y2={string.y} y1={string.y}
-                      x1={string.x1} x2={string.x2}
-                      strokeWidth="0.01"
-                      stroke={
-                        this.state.hoveredString===number ? '#F66' : '#000'
-                      }
-                      fill="non"/>)
+            {this.state.stringPositions.map(
+              (string, number) => (
+                <line
+                  key={`str${number}`}
+                  x1={string.x1} x2={string.x2}
+                  y2={string.y} y1={string.y}
+                  strokeWidth="0.01"
+                  stroke={
+                    this.state.hoveredString===number ? '#F66' : '#000'
+                  }
+                  fill="non"/>
+              )
+            )
             }
-        <line y2={this.state.stringPositions[0].y}
+            <line
               y1={this.state.stringPositions[5].y}
-              x1={1} x2={1} strokeWidth="0.01" stroke="#333" fill="non"/>
-        </g>
-        <g>
-        <title>notes</title>
-        {
-          this.notesDisplay()
-        }
-        </g>
+              y2={this.state.stringPositions[0].y}
+              x1={1} x2={1}
+              strokeWidth="0.01"
+              stroke="#333"
+              fill="non"
+            />
+          </g>
+          <g>
+            <title>notes</title>
+            { this.notesDisplay() }
+          </g>
         </svg>
       </div>
     );
   }
 }
 
+const styles = theme => ({
+  root: {
+    width: `${scale*width}rem`,
+    display:"inline-block"
+  }
+});
 
 export default  withStyles(styles)(TabBar);

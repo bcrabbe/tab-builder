@@ -2,47 +2,30 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as R from 'ramda';
 import { withStyles } from '@material-ui/core/styles';
-import StrokedText from './StrokedText.jsx';
-const styles = theme => ({
-  root: {
-  },
-  strings: {
-    strokeWidth: "0.0007rem",
-    stroke: "#000",
-    fill: "none"
-  },
-  background: {
-    fill: "#fff"
-  },
-  noteCircle: {
-    r: "0.02rem",
-    stroke: "#000",
-  },
-  noteLabel:{
-    fontSize: '0.01rem',
-    fill: "#000",
-  }
-});
+import BackedText from './BackedText.jsx';
 
 class FretBoard extends Component {
-
   /**
    * Object detailing the frets played on each string of the guitar.
    * eg
    *  ```
-   * notes[] = [
+   * notes[numberOfStrings] = [
    *   [{fret: 2}],
    *   [{fret: 'X'}],
    *   ....
    * ]
    *
    *```
-   * @type Array(6)<Object<Object<string, Array<Object<string, (number|string)>>>
+   * @type Array(int)<Object<Object<string, Array<Object<string, (number|string)>>>
    */
 
   static propTypes = {
     notes: PropTypes.array.isRequired,
-  };
+  }
+
+  static defaultProps = {
+
+  }
 
   constructor(props) {
     super(props);
@@ -55,8 +38,8 @@ class FretBoard extends Component {
       bottom: Y/20
     };
     this.state = {
-      X: X,
-      Y: Y,
+      X,
+      Y,
       padding,
       topFret: 0,
       bottomFret: Y,
@@ -66,160 +49,218 @@ class FretBoard extends Component {
     this.state = {
       ...this.state,
       strings: this.strings(),
-      frets: this.fretPositions()
-
+      frets: this.fretPositions(),
     };
-    console.log(this.state.strings);
-    console.log(this.state.frets);
+    this.state = {
+      ...this.state,
+      positioningUtils: this.positioningUtils(),
+    };
+    //console.log(this.state.strings);
+    console.log(this.state);
+    console.log(this.props);
   }
 
-  strings = () => {
+  positioningUtils = _ => {
+    const {min, max} = this.state.fretsToDisplay;
+    const yForFret = R.flip(R.nth)(this.state.frets);
+    const fretSpacing = Math.abs(yForFret(1) - yForFret(2));
+    const fretOfNote = R.prop('fret');
+    const yOfFretOfNote = R.pipe(
+      fretOfNote,
+      R.ifElse(
+        R.converge(R.or, [R.equals(0), R.equals('X')]),
+        R.compose(yForFret, R.always(min)),
+        yForFret
+      )
+    );
+    const yOfFretAboveNote = R.ifElse(
+      R.pipe(fretOfNote, R.converge(R.or, [R.equals(0), R.equals('X')])),
+      R.pipe(yOfFretOfNote, R.subtract(fretSpacing)),
+      R.compose(yForFret, R.dec, fretOfNote)
+    );
+    const labelPositionForNote = n => yOfFretAboveNote(n) +
+          (yOfFretOfNote(n) - yOfFretAboveNote(n))/2;
+    return {
+      yForFret,
+      fretOfNote,
+      yOfFretOfNote,
+      yOfFretAboveNote,
+      labelPositionForNote
+    };
+  }
+
+  strings = _ => {
     const {X, Y, padding, numberOfStrings} = this.state;
     const widthFretboard = X - padding.left - padding.right;
     const x_s = s => padding.left + s * (widthFretboard/(numberOfStrings-1));
     return R.map(x_s, R.range(0, numberOfStrings));
   }
 
-  findFretsInNotes = () => {
+  findFretsInNotes = _ => {
     const {notes} = this.props;
-    const initAcc = {min:24, max:0};
-    const noteReducer = ({min, max}, {fret}) => fret==="X" || fret===0 ? ({min, max}) : ({
-      min: fret < min ? fret : min,
-      max: fret > max ? fret : max
-    });
-    const stringReducer = (acc, string) => R.reduce(noteReducer, acc, string);
-    return R.reduce(stringReducer, initAcc, notes);
+    const initAcc = {
+      min:24,
+      max:0
+    };
+    return R.reduce(
+      (acc, string) => R.reduce(
+        ({min, max}, {fret}) => fret==="X" || fret===0 ?
+          ({min, max}) : ({
+            min: fret < min ? fret : min,
+            max: fret > max ? fret : max
+          }),
+        acc,
+        string
+      ),
+      initAcc,
+      notes
+    );
   }
 
-  fretsToDisplay = () => {
+  fretsToDisplay = _ => {
     const {min, max} = this.findFretsInNotes();
-    console.log(min, max);
+//    console.log(min, max);
     return {
       min: min <= 2 ? 0 : min - 2,
       max: max + 1
     };
   }
 
-  fretPositions = () => {
+  fretPositions = _ => {
     const {X, Y, padding, fretsToDisplay} = this.state;
     const heightFretboard = Y - padding.top - padding.bottom;
     const numberOfFrets = fretsToDisplay.max - fretsToDisplay.min + 1;
-    const y_f = f => padding.top + (f-fretsToDisplay.min) * (heightFretboard/(numberOfFrets-1));
-    return R.map(y_f, R.range(0, fretsToDisplay.max+1));
+    const yForFret = f => padding.top +
+          (f-fretsToDisplay.min) *
+          (heightFretboard/(numberOfFrets-1));
+    return R.map(yForFret, R.range(0, fretsToDisplay.max+1));
   }
 
-  drawChord = (chord) => {
-    for(var string in chord) {
-      if(chord.hasOwnProperty(string)) {
-        chord[string].forEach(note => {
-          var fret = note.fret;
-          if(fret==="X") {
-            this.markStringNotPlayed(string);
-          } else {
-            this.drawNote(string, fret, note.label);
-          }
-        });
-      }
-    }
-  }
+  // drawChord = chord => {
+  //   for(var string in chord) {
+  //     if(chord.hasOwnProperty(string)) {
+  //       chord[string].forEach(note => {
+  //         var fret = note.fret;
+  //         if(fret==="X") {
+  //           this.markStringNotPlayed(string);
+  //         } else {
+  //           this.drawNote(string, fret, note.label);
+  //         }
+  //       });
+  //     }
+  //   }
+  // }
 
-  stringsJSX = () => {
+  stringsJSX = _ => {
     const {min, max} = this.state.fretsToDisplay;
-    const stringJSX = (s) => (
+    const stringJSX = string => (
       <line
         y2={this.state.frets[min]}
         y1={this.state.frets[max]}
-        x1={this.state.strings[s]}
-        x2={this.state.strings[s]}
+        x1={this.state.strings[string]}
+        x2={this.state.strings[string]}
         className={this.props.classes.strings}
-        key={s}
-        />
+        key={string}
+      />
     );
-    return <g>{R.map(stringJSX, R.range(0, this.state.strings.length))}</g>;
+    return (
+      <g>
+        {R.map(stringJSX, R.range(0, this.state.strings.length))}
+      </g>
+    );
   }
 
-  fretsJSX = () => {
-    const fretJSX = (f) => (
+  fretsJSX = _ => {
+    const fretJSX = fret => (
       <line
-        y2={this.state.frets[f]} y1={this.state.frets[f]}
+        y2={this.state.frets[fret]} y1={this.state.frets[fret]}
         x1={this.state.strings[0]}
         x2={this.state.strings[this.state.strings.length-1]}
         className={this.props.classes.strings}
-        key={f}
-        />
+        key={fret}
+      />
     );
     const {min, max} = this.state.fretsToDisplay;
-    return <g>{R.map(fretJSX, R.range(min, max+1))}</g>;
+    return (
+      <g>
+        {R.map(fretJSX, R.range(min, max+1))}
+      </g>
+    );
   }
 
-  positioningUtils = () => {
-    const {min, max} = this.state.fretsToDisplay;
-    const y_f = R.flip(R.nth)(this.state.frets);
-    const f_n = R.prop('fret');
-    const y_n = R.pipe(
-      f_n,
-      R.ifElse(
-        R.converge(R.or, [R.equals(0), R.equals('X')]),
-        R.compose(y_f, R.always(min)),
-        R.compose(y_f)
-      )
-    );
-    const y_nsub1 = R.ifElse(
-      R.pipe(f_n, R.converge(R.or, [R.equals(0), R.equals('X')])),
-      y_n,
-      R.compose(y_f, R.dec, f_n)
-    );
-    const cy_n = n => y_nsub1(n) + (y_n(n) - y_nsub1(n))/2;
-    return {
-      y_f, f_n, y_n, y_nsub1, cy_n
-    };
-  }
-
-  notesJSX = () => {
+  notesJSX = _ => {
     const {notes, classes} = this.props;
     const {strings, frets} = this.state;
     const stringReducer = (acc, [string, notes]) => R.concat(
       acc,
-      R.map(noteJSX(string), notes),
+      R.map(this.noteJSX(string), notes),
     );
-    const noteJSX = R.curry((s, n) => {
-      return this.noteLabelJSX(s, n);
-    });
-    return R.reduce(stringReducer, [], Object.entries(this.props.notes));
+    return R.reduce(stringReducer, [], R.toPairs(this.props.notes));
   }
 
-  noteLabelJSX = (s, n) => {
-    const {strings, frets} = this.state;
+  textLabel = (x, y, string, note) => {
     const {notes, classes} = this.props;
-    const {y_f, f_n, y_n, y_nsub1, cy_n} = this.positioningUtils();
-    const text = (
-      <text
-        xmlns="http://www.w3.org/2000/svg"
-        textAnchor="middle"
-        x={strings[s]}
-        y={cy_n(n)}
-        className={classes.noteLabel}>
-        {f_n(n)}
-      </text>
-    );
+    const {fretOfNote, yForFret} = this.state.positioningUtils;
+    const fretSpacing = Math.abs(yForFret(1) - yForFret(2));
+    const fontSize = 0.66 * fretSpacing;
     return (
-      <StrokedText
-        key={R.join('',[s, f_n(n)])}
-        text={text} />
+      <BackedText
+        fontSize={fontSize}
+        key={`${string}${fretOfNote(note)}`}
+        x={x}
+        y={y}
+        className={classes.noteLabel}
+        style={{
+          fontSize: fontSize,
+        }}
+      >
+        {R.prop('label', note) || fretOfNote(note)}
+      </BackedText>
     );
   }
 
-  noteCircleJSX = (s, n) => {
+  noteJSX = R.curry((string, note) => {
     const {strings, frets} = this.state;
     const {notes, classes} = this.props;
-    const {y_f, f_n, y_n, y_nsub1, cy_n} = this.positioningUtils();
+    const {
+      fretOfNote,
+      labelPositionForNote
+    } = this.state.positioningUtils;
+    const x = strings[string],
+          y = labelPositionForNote(note);
+    console.log(
+      string,
+      note,
+      this.state.positioningUtils.yOfFretOfNote(note),
+      this.state.positioningUtils.yOfFretAboveNote(note),
+      labelPositionForNote(note)
+    );
+
+    const key = R.concat([string], [fretOfNote(note)]);
+    const labelJSX = this.props.labelRenderer ?
+          this.props.labelRenderer(x, y, string, note):
+          this.textLabel(x, y, string, note);
+    return this.withKey(
+      R.concat([string], [fretOfNote(note)]),
+      labelJSX
+    );
+  })
+
+  withKey = (key, component) => React.cloneElement(component, {
+    key: key
+  })
+
+  noteCircleJSX = (string, note) => {
+    const {strings, frets} = this.state;
+    const {notes, classes} = this.props;
+    const {yForFret, yOfFretOfNote, labelPositionForNote} = this.state.positioningUtils;
     return (
       <cirle
         xmlns="http://www.w3.org/2000/svg"
-        key={R.concat([s], [f_n(n)])}
-        cx={strings[s]}
-        cy={cy_n(n)}
-        className={classes.noteCircle}/>
+        cx={strings[string]}
+        cy={labelPositionForNote(note)}
+        className={classes.noteCircle}
+      />
     );
   }
 
@@ -233,7 +274,7 @@ class FretBoard extends Component {
       height: Y
     };
     //consolelog(this.state.barWidth);
-    console.log(this.notesJSX());
+//    console.log(this.notesJSX());
     return (
       <svg
         className={this.props.className || classes.root}
@@ -257,5 +298,26 @@ class FretBoard extends Component {
     );
   }
 }
+
+const styles = theme => ({
+  root: {
+  },
+  strings: {
+    strokeWidth: "0.0007rem",
+    stroke: "#000",
+    fill: "none"
+  },
+  background: {
+    fill: "#fff"
+  },
+  noteCircle: {
+    r: "0.02rem",
+    stroke: "#000",
+  },
+  noteLabel:{
+    fontSize: '0.01rem',
+    color: "#000",
+  }
+});
 
 export default withStyles(styles)(FretBoard);

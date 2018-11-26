@@ -1,18 +1,7 @@
 import React, { Component } from 'react';
-import TabBar from './TabBar/TabBar.jsx';
+import TabBar from './TabBar.jsx';
 import { withStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/lab/Slider';
-
-
-const styles = theme => ({
-  page: {
-    maxWidth: `${4*15}rem`,
-    borderStyle: 'solid',
-    margin:"5%",
-    padding:"5%",
-    display: "inline-block" ,
-  }
-});
 
 class TabDisplay extends Component {
   constructor(props) {
@@ -27,7 +16,7 @@ class TabDisplay extends Component {
     this.setState({barWidth: value});
   }
 
-  sizeSlider = () => {
+  sizeSlider = _ => {
     return (
       <Slider
         style={{
@@ -64,5 +53,15 @@ class TabDisplay extends Component {
     );
   }
 }
+
+const styles = theme => ({
+  page: {
+    maxWidth: `${4*15}rem`,
+    borderStyle: 'solid',
+    margin:"5%",
+    padding:"5%",
+    display: "inline-block" ,
+  }
+});
 
 export default withStyles(styles)(TabDisplay);

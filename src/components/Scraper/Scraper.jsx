@@ -35,7 +35,7 @@ class App extends Component {
     };
   }
 
-  search = (query) => {
+  search = query => {
     fetch(this.state.serverUrl+"/search/"+query).then(
       res => res.json()
     ).then(
@@ -43,7 +43,7 @@ class App extends Component {
     ).catch(err => console.error(err));
   }
 
-  get = (url) => {
+  get = url => {
     fetch(this.state.serverUrl+"/get/"+encodeURIComponent(url)).then(
       res => res.json()
     ).then(
@@ -55,7 +55,7 @@ class App extends Component {
     ).catch(err => console.error(err));
   }
 
-  displayLoadButton = (url) => {
+  displayLoadButton = url => {
     return (
       <input type="submit"
              onClick={(e) => this.get(url)}
@@ -63,7 +63,7 @@ class App extends Component {
     );
   }
 
-  displayResultInfo = (result) => Object.entries(result).map(
+  displayResultInfo = result => Object.entries(result).map(
     ([field, value]) => (<p key={field}>{field}: {value}</p>)
   )
 
@@ -80,39 +80,39 @@ class App extends Component {
     (result, ind) => this.resultDisplay(result, ind)
   )
 
-  tabFormatToggle = () => (
+  tabFormatToggle = _ => (
     <label>
       format
-      <input type="checkbox"
-             onChange={
-               e => this.setState(prevState => ({format: !prevState.format}))
-        }/>
+      <input
+        type="checkbox"
+        onChange={
+          e => this.setState(prevState => ({format: !prevState.format}))
+        }
+      />
     </label>
   )
 
-  tabDisplay = (tab) => {
+  tabDisplay = tab => {
     return (
       <div className={this.props.classes.tabDisplay}>
         {this.tabFormatToggle()}
-        {
-          this.state.format ?
+        {this.state.format ?
             this.formattedTabDisplay(tab) :
             this.rawTabDisplay(tab)
         }
-
       </div>
     );
   }
 
-  formattedTabDisplay = (tab) => {
+  formattedTabDisplay = tab => {
     const parsedTab = this.state.parser.parse(tab.content.text);
     console.log(this.state.parser);
     return (
       <TabDisplay tab={parsedTab}/>
     );
   }
-  
-  rawTabDisplay = (tab) => {
+
+  rawTabDisplay = tab => {
     return (
       <div>
         <h3>Raw</h3>
@@ -121,34 +121,42 @@ class App extends Component {
     );
   }
 
-  searchControlDisplay = () => {
+  searchControlDisplay = _ => {
     return (
       <React.Fragment>
-        <input value={this.state.query}
-               onInput={(e) => this.setState({query: e.target.value})} />
-          <input type="submit"
-                 onClick={(e) => this.search(this.state.query)}
-            value="Search tab" />
+        <input
+          value={this.state.query}
+          onInput={(e) => this.setState({query: e.target.value})}
+        />
+        <input
+          type="submit"
+          onClick={(e) => this.search(this.state.query)}
+          value="Search tab"
+        />
       </React.Fragment>
     );
   }
 
-  backControlDisplay = () => {
+  backControlDisplay = _ => {
     return (
-      <input type="submit"
-             onClick={(e) => this.setState({tab:undefined})}
-        value="back to results" />
+      <input
+        type="submit"
+        onClick={(e) => this.setState({tab:undefined})}
+        value="back to results"
+      />
     );
   }
 
-  parserTestButton = () => {
+  parserTestButton = _ => {
     return (
-      <input type="submit"
-             onClick={(e) =>{
-               const {testTab, parsed} = this.state.parser.test2();
-               this.setState({tab:testTab});
+      <input
+        type="submit"
+        onClick={(e) =>{
+          const {testTab, parsed} = this.state.parser.test2();
+          this.setState({tab:testTab});
         }}
-        value="hereComestheblues test" />
+        value="hereComestheblues test"
+      />
     );
   }
   
