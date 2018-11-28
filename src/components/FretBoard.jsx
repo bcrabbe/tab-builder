@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import * as R from 'ramda';
 import { withStyles } from '@material-ui/core/styles';
 import BackedText from './BackedText.jsx';
+import classnames from 'classnames';
+
+const STROKE_WIDTH = 0.0007;
 
 class FretBoard extends Component {
   /**
@@ -51,9 +54,19 @@ class FretBoard extends Component {
       strings: this.strings(),
       frets: this.fretPositions(),
     };
+    const positioningUtils = this.positioningUtils();
     this.state = {
       ...this.state,
-      positioningUtils: this.positioningUtils(),
+      positioningUtils,
+    };
+
+    const fretSpacing = Math.abs(
+      positioningUtils.yForFret(1) -
+        positioningUtils.yForFret(2)
+    );
+    this.state = {
+      ...this.state,
+      fontSize: 0.66 * fretSpacing
     };
     //console.log(this.state.strings);
     console.log(this.state);
@@ -136,27 +149,13 @@ class FretBoard extends Component {
     return R.map(yForFret, R.range(0, fretsToDisplay.max+1));
   }
 
-  // drawChord = chord => {
-  //   for(var string in chord) {
-  //     if(chord.hasOwnProperty(string)) {
-  //       chord[string].forEach(note => {
-  //         var fret = note.fret;
-  //         if(fret==="X") {
-  //           this.markStringNotPlayed(string);
-  //         } else {
-  //           this.drawNote(string, fret, note.label);
-  //         }
-  //       });
-  //     }
-  //   }
-  // }
-
   stringsJSX = _ => {
     const {min, max} = this.state.fretsToDisplay;
+    const lineWidth = (STROKE_WIDTH * this.state.fontSize) * 600;
     const stringJSX = string => (
       <line
-        y2={this.state.frets[min]}
-        y1={this.state.frets[max]}
+        y2={this.state.frets[min] - (lineWidth/2)}
+        y1={this.state.frets[max] + (lineWidth/2)}
         x1={this.state.strings[string]}
         x2={this.state.strings[string]}
         className={this.props.classes.strings}
@@ -170,20 +169,26 @@ class FretBoard extends Component {
     );
   }
 
-  fretsJSX = _ => {
-    const fretJSX = fret => (
+  fretJSX = fret => {
+    return (
       <line
         y2={this.state.frets[fret]} y1={this.state.frets[fret]}
         x1={this.state.strings[0]}
         x2={this.state.strings[this.state.strings.length-1]}
-        className={this.props.classes.strings}
+        className={classnames(
+          this.props.classes.fret,
+          {[this.props.classes.zeroFret]: fret===0}
+        )}
         key={fret}
       />
     );
+  }
+
+  fretsJSX = _ => {
     const {min, max} = this.state.fretsToDisplay;
     return (
       <g>
-        {R.map(fretJSX, R.range(min, max+1))}
+        {R.map(this.fretJSX, R.range(min, max+1))}
       </g>
     );
   }
@@ -201,17 +206,15 @@ class FretBoard extends Component {
   textLabel = (x, y, string, note) => {
     const {notes, classes} = this.props;
     const {fretOfNote, yForFret} = this.state.positioningUtils;
-    const fretSpacing = Math.abs(yForFret(1) - yForFret(2));
-    const fontSize = 0.66 * fretSpacing;
     return (
       <BackedText
-        fontSize={fontSize}
+        fontSize={this.state.fontSize}
         key={`${string}${fretOfNote(note)}`}
         x={x}
         y={y}
         className={classes.noteLabel}
         style={{
-          fontSize: fontSize,
+          fontSize: this.state.fontSize,
         }}
       >
         {R.prop('label', note) || fretOfNote(note)}
@@ -273,20 +276,18 @@ class FretBoard extends Component {
       width: X,
       height: Y
     };
-    //consolelog(this.state.barWidth);
-//    console.log(this.notesJSX());
     return (
       <svg
         className={this.props.className || classes.root}
         viewBox={`0 0 ${this.state.X} ${this.state.Y}`}
         xmlns="http://www.w3.org/2000/svg"
-        >
+      >
         <title>fretboard</title>
         <g>
           <rect
             className={classes.background}
             {...canvasCoords}
-            />
+          />
           {this.stringsJSX()}
           {this.fretsJSX()}
         </g>
@@ -303,9 +304,17 @@ const styles = theme => ({
   root: {
   },
   strings: {
-    strokeWidth: "0.0007rem",
+    strokeWidth: STROKE_WIDTH+'rem',
     stroke: "#000",
     fill: "none"
+  },
+  fret: {
+    strokeWidth: STROKE_WIDTH+'rem',
+    stroke: "#000",
+    fill: "none"
+  },
+  zeroFret: {
+    strokeWidth: `${2*STROKE_WIDTH}rem`,
   },
   background: {
     fill: "#fff"
@@ -315,7 +324,7 @@ const styles = theme => ({
     stroke: "#000",
   },
   noteLabel:{
-    fontSize: '0.01rem',
+    fontSize: '0.01',//'rem',
     color: "#000",
   }
 });
