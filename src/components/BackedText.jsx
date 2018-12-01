@@ -14,7 +14,7 @@ class BackedText extends React.PureComponent {
       PropTypes.string
     ]),
     backgroundColor: PropTypes.string,
-    children: PropTypes.string,
+    children: PropTypes.any,
   }
 
   static defaultProps = {
@@ -37,7 +37,7 @@ class BackedText extends React.PureComponent {
   }
 
   render() {
-    const {key, ...rest} = this.props;
+    const {key, backgroundColor, children, ...propsToPass} = this.props;
     const width = this.props.children >= 10 ?
           this.props.fontSize*1.15:
           this.props.fontSize*0.65;
@@ -50,16 +50,16 @@ class BackedText extends React.PureComponent {
           rx={rounding} ry={rounding}
           className={this.props.classes.background}
           fill={this.props.backgroundColor}
-          x={this.props.x - (width/2)}
-          y={this.props.y - (this.props.fontSize/2)}
+          x={this.props.x - (width / 2)}
+          y={this.props.y - (this.props.fontSize / 2)}
           width={width}
           height={this.props.fontSize}
         />
         <text
           xmlns="http://www.w3.org/2000/svg"
           textAnchor="middle"
-          {...this.props}
-          y={this.props.y+(this.props.fontSize/3)}
+          {...propsToPass}
+          y={this.props.y + (this.props.fontSize / 3)}
         >
           {this.props.children}
         </text>

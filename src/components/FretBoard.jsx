@@ -23,7 +23,9 @@ class FretBoard extends Component {
    */
 
   static propTypes = {
+    classes: PropTypes.object.isRequired,
     notes: PropTypes.array.isRequired,
+    className: PropTypes.string,
   }
 
   static defaultProps = {
@@ -54,28 +56,23 @@ class FretBoard extends Component {
       strings: this.strings(),
       frets: this.fretPositions(),
     };
+    this.state.fretSpacing = this.state.frets[1] - this.state.frets[0];
     const positioningUtils = this.positioningUtils();
     this.state = {
       ...this.state,
       positioningUtils,
     };
-
-    const fretSpacing = Math.abs(
-      positioningUtils.yForFret(1) -
-        positioningUtils.yForFret(2)
-    );
     this.state = {
       ...this.state,
-      fretSpacing,
-      fontSize: 0.66 * fretSpacing
+      fontSize: 0.66 * this.state.fretSpacing
     };
-
+    console.log(this.state);
   }
 
   positioningUtils = _ => {
     const {min, max} = this.state.fretsToDisplay;
     const yForFret = R.flip(R.nth)(this.state.frets);
-    const fretSpacing = Math.abs(yForFret(1) - yForFret(2));
+    const fretSpacing = this.state.fretSpacing;
     const fretOfNote = R.prop('fret');
     const yOfFretOfNote = R.pipe(
       fretOfNote,
@@ -87,11 +84,20 @@ class FretBoard extends Component {
     );
     const yOfFretAboveNote = R.ifElse(
       R.pipe(fretOfNote, R.converge(R.or, [R.equals(0), R.equals('X')])),
-      R.pipe(yOfFretOfNote, R.subtract(fretSpacing)),
+      R.pipe(yOfFretOfNote, R.flip(R.subtract)(fretSpacing * 0.3)),
       R.compose(yForFret, R.dec, fretOfNote)
     );
     const labelPositionForNote = n => yOfFretAboveNote(n) +
           (yOfFretOfNote(n) - yOfFretAboveNote(n))/2;
+    console.log(
+      this.state,
+      "yOfFretOfNote({fret: 0})", yOfFretOfNote({fret: 0}),
+      "yOfFretAboveNote({fret: 0})", yOfFretAboveNote({fret: 0}),
+      "labelPositionForNote({fret: 0})", labelPositionForNote({fret: 0}),
+      "yOfFretOfNote({fret: 0})", yOfFretOfNote({fret: 0}),
+      "R.subtract(fretSpacing, 0)", R.subtract(0, fretSpacing),
+      "R.pipe(yOfFretOfNote, R.subtract(fretSpacing))({fret: 0})", R.pipe(yOfFretOfNote, R.subtract(fretSpacing))({fret: 0})
+    );
     return {
       yForFret,
       fretOfNote,
@@ -203,7 +209,7 @@ class FretBoard extends Component {
 
   textLabel = (x, y, string, note) => {
     const {notes, classes} = this.props;
-    const {fretOfNote, yForFret} = this.state.positioningUtils;
+    const {fretOfNote} = this.state.positioningUtils;
     return (
       <BackedText
         fontSize={this.state.fontSize}
@@ -269,7 +275,7 @@ class FretBoard extends Component {
     };
     return (
       <svg
-        className={this.props.className || classes.root}
+        className={classnames(this.props.className, classes.root)}
         viewBox={`0 0 ${this.state.X} ${this.state.Y}`}
         xmlns="http://www.w3.org/2000/svg"
       >

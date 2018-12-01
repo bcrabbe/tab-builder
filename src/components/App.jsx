@@ -6,15 +6,17 @@ import Scraper from './Scraper/Scraper.jsx';
 import { withStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/lab/Slider';
 import Scalometer from './Scalometer.jsx';
+import classnames from 'classnames';
 
 class App extends Component {
 
   static propTypes = {
-    name: PropTypes.string
+    classes: PropTypes.object.isRequired,
+    className: PropTypes.string,
   }
 
   static defaultProps = {
-    name: PropTypes.string
+
   }
 
   constructor(props) {
@@ -62,8 +64,8 @@ class App extends Component {
           [{fret:3}]
         ],
         [
-          [{fret:1},],
-          [{fret:9}],
+          [{fret:0},],
+          [{fret:'X'}],
           [{fret:10}],
           [{fret:2}],
           [{fret:5}],
@@ -73,23 +75,24 @@ class App extends Component {
     };
   }
 
-  chordJSX = notes => (
+  chordJSX = (notes, i) => (
     <FretBoard
+      key={i}
       className={this.props.classes.chord}
       notes={notes}
     />
   )
 
   render() {
-    const {classes} = this.props;
+    const {classes, className} = this.props;
     //consolelog(this.state.barWidth);
     return (
-      <div>
+      <div className={classnames(className, classes.root)}>
          {this.state.chords.map(this.chordJSX)}
         <Scalometer
           root='E'
           scale={[0, 3, 5, 6, 7, 10]}
-          tuning={['E','A','D','G','B','E']}
+          tuning="EADGBE"
         />
         <Scraper/>
       </div>
