@@ -66,11 +66,10 @@ class FretBoard extends Component {
     );
     this.state = {
       ...this.state,
+      fretSpacing,
       fontSize: 0.66 * fretSpacing
     };
-    //console.log(this.state.strings);
-    console.log(this.state);
-    console.log(this.props);
+
   }
 
   positioningUtils = _ => {
@@ -132,7 +131,6 @@ class FretBoard extends Component {
 
   fretsToDisplay = _ => {
     const {min, max} = this.findFretsInNotes();
-//    console.log(min, max);
     return {
       min: min <= 2 ? 0 : min - 2,
       max: max + 1
@@ -150,12 +148,12 @@ class FretBoard extends Component {
   }
 
   stringsJSX = _ => {
-    const {min, max} = this.state.fretsToDisplay;
-    const lineWidth = (STROKE_WIDTH * this.state.fontSize) * 600;
+    const {fretsToDisplay:{min, max}, fretSpacing} = this.state;
+//    const lineWidth =  (STROKE_WIDTH * this.state.fontSize) * 600;
     const stringJSX = string => (
       <line
-        y2={this.state.frets[min] - (lineWidth/2)}
-        y1={this.state.frets[max] + (lineWidth/2)}
+        y2={this.state.frets[min] - (fretSpacing/8)}
+        y1={this.state.frets[max] + (fretSpacing/8)}
         x1={this.state.strings[string]}
         x2={this.state.strings[string]}
         className={this.props.classes.strings}
@@ -231,13 +229,6 @@ class FretBoard extends Component {
     } = this.state.positioningUtils;
     const x = strings[string],
           y = labelPositionForNote(note);
-    console.log(
-      string,
-      note,
-      this.state.positioningUtils.yOfFretOfNote(note),
-      this.state.positioningUtils.yOfFretAboveNote(note),
-      labelPositionForNote(note)
-    );
 
     const key = R.concat([string], [fretOfNote(note)]);
     const labelJSX = this.props.labelRenderer ?
@@ -323,7 +314,7 @@ const styles = theme => ({
     r: "0.02rem",
     stroke: "#000",
   },
-  noteLabel:{
+  noteLabel: {
     fontSize: '0.01',//'rem',
     color: "#000",
   }

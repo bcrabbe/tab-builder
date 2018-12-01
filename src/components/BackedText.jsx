@@ -27,7 +27,6 @@ class BackedText extends React.PureComponent {
   }
 
   componentDidMount() {
-    console.log();
     this.setState(R.assoc('textWidth', measureText(this.props.children).width));
   }
 
@@ -39,7 +38,6 @@ class BackedText extends React.PureComponent {
 
   render() {
     const {key, ...rest} = this.props;
-    console.log(this.state, this.props, this.props.children);
     const width = this.props.children >= 10 ?
           this.props.fontSize*1.15:
           this.props.fontSize*0.65;

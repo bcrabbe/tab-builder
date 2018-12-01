@@ -17,7 +17,6 @@ class App extends Component {
     name: PropTypes.string
   }
 
-
   constructor(props) {
     super(props);
     this.state = {
