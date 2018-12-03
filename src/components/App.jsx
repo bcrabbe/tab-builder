@@ -94,6 +94,16 @@ class App extends Component {
           scale={[0, 3, 5, 6, 7, 10]}
           tuning="EADGBE"
         />
+        <Scalometer
+          root='D'
+          scale={[0, 3, 5, 6, 7, 10]}
+          tuning="DADFAD"
+        />
+        <Scalometer
+          root='G'
+          scale={[0, 3, 5, 6, 7, 10]}
+          tuning="DGDGBD"
+        />
         <Scraper/>
       </div>
     );

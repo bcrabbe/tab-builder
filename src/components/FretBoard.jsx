@@ -88,16 +88,7 @@ class FretBoard extends Component {
       R.compose(yForFret, R.dec, fretOfNote)
     );
     const labelPositionForNote = n => yOfFretAboveNote(n) +
-          (yOfFretOfNote(n) - yOfFretAboveNote(n))/2;
-    console.log(
-      this.state,
-      "yOfFretOfNote({fret: 0})", yOfFretOfNote({fret: 0}),
-      "yOfFretAboveNote({fret: 0})", yOfFretAboveNote({fret: 0}),
-      "labelPositionForNote({fret: 0})", labelPositionForNote({fret: 0}),
-      "yOfFretOfNote({fret: 0})", yOfFretOfNote({fret: 0}),
-      "R.subtract(fretSpacing, 0)", R.subtract(0, fretSpacing),
-      "R.pipe(yOfFretOfNote, R.subtract(fretSpacing))({fret: 0})", R.pipe(yOfFretOfNote, R.subtract(fretSpacing))({fret: 0})
-    );
+          (yOfFretOfNote(n) - yOfFretAboveNote(n)) / 2;
     return {
       yForFret,
       fretOfNote,

@@ -38,9 +38,9 @@ class BackedText extends React.PureComponent {
 
   render() {
     const {key, backgroundColor, children, ...propsToPass} = this.props;
-    const width = this.props.children >= 10 ?
-          this.props.fontSize*1.15:
-          this.props.fontSize*0.65;
+    const width = this.props.children.toString().length *
+          0.85 *
+          this.props.fontSize;
     const rounding = this.props.fontSize*0.3;
     return (
       <React.Fragment
@@ -74,7 +74,8 @@ const styles = theme => ({
     strokeWidth: '0.007em',
   },
   background: {
-    borderRadius: 40
+    borderRadius: 40,
+    stroke: '1px solid black'
   }
 });
 
