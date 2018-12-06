@@ -29,7 +29,7 @@ class TabDisplay extends Component {
   }
 
   render() {
-    const {classes} = this.props;
+//    const {classes} = this.props;
     //consolelog(this.state.barWidth);
     return (
       <div>

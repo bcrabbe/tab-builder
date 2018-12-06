@@ -26,7 +26,7 @@ class TabBar extends Component {
   }
 
   initStrings = padding => {
-    const string = new Array();
+    const string = [];
     string[5] = {
       x1: 0,
       x2: 1,

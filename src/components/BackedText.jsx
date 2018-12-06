@@ -39,7 +39,7 @@ class BackedText extends React.PureComponent {
   render() {
     const {key, backgroundColor, children, ...propsToPass} = this.props;
     const width = this.props.children.toString().length *
-          0.85 *
+          1.2 *
           this.props.fontSize;
     const rounding = this.props.fontSize*0.3;
     return (
@@ -51,9 +51,9 @@ class BackedText extends React.PureComponent {
           className={this.props.classes.background}
           fill={this.props.backgroundColor}
           x={this.props.x - (width / 2)}
-          y={this.props.y - (this.props.fontSize / 2)}
+          y={this.props.y - (this.props.fontSize*1.2 / 2)}
           width={width}
-          height={this.props.fontSize}
+          height={this.props.fontSize*1.2}
         />
         <text
           xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,8 @@ const styles = theme => ({
   },
   background: {
     borderRadius: 40,
-    stroke: '1px solid black'
+    // strokeWidth: '0.001px',
+    // stroke:  '#000',
   }
 });
 

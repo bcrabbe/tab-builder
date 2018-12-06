@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 import * as R from 'ramda';
 import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
@@ -20,22 +20,22 @@ const rotate = R.curry((rotateBy, list) => {
   );
 });
 
-const getIntervals = scale => R.addIndex(R.map)(
-  (n, i) => i===0 ? 0 : n - scale[i-1],
-  scale
-)
-;
+// const getIntervals = scale => R.addIndex(R.map)(
+//   (n, i) => i===0 ? 0 : n - scale[i-1],
+//   scale
+// );
+
 const Scalometer = props => {
   const {className, classes, root, tuning, scale} = props;
-  const notes = getNotes(root);
-  const notesInScale = R.map(
-    i => notes[i % notes.length],
-    scale
-  );
-  const intervals = getIntervals(scale);
+//  const notes = getNotes(root);
+  // const notesInScale = R.map(
+  //   i => notes[i % notes.length],
+  //   scale
+  // );
+//  const intervals = getIntervals(scale);
   const strings = R.addIndex(R.map)(
     (noteAt0, stringIndex) => {
-      const offset = notes.indexOf(noteAt0);
+  //    const offset = notes.indexOf(noteAt0);
       const notesForString = getNotes(noteAt0);
       const fretOfRoot = notesForString.indexOf(root);
       return R.map(

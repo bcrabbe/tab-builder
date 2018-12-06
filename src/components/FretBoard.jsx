@@ -70,7 +70,7 @@ class FretBoard extends Component {
   }
 
   positioningUtils = _ => {
-    const {min, max} = this.state.fretsToDisplay;
+    const {min} = this.state.fretsToDisplay;
     const yForFret = R.flip(R.nth)(this.state.frets);
     const fretSpacing = this.state.fretSpacing;
     const fretOfNote = R.prop('fret');
@@ -99,7 +99,7 @@ class FretBoard extends Component {
   }
 
   strings = _ => {
-    const {X, Y, padding, numberOfStrings} = this.state;
+    const {X, padding, numberOfStrings} = this.state;
     const widthFretboard = X - padding.left - padding.right;
     const x_s = s => padding.left + s * (widthFretboard/(numberOfStrings-1));
     return R.map(x_s, R.range(0, numberOfStrings));
