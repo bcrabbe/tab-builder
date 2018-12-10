@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as R from 'ramda';
 import { withStyles } from '@material-ui/core/styles';
-import classNames from 'classnames';
+//import classNames from 'classnames';
 import {measureText} from '../utils.jsx';
 
 class BackedText extends React.PureComponent {

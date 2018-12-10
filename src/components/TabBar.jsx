@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-//x = scale*y
+import React, {Component} from 'react';
+import {withStyles} from '@material-ui/core/styles';
+import * as R from 'ramda';
 const scale = 5;
 let width = 7;
 
@@ -18,38 +18,29 @@ class TabBar extends Component {
     };
     this.rootElem = React.createRef();
     this.svgRef = React.createRef();
-    //consolelog(this.state.stringPositions);
     this.onClick = this.onClick.bind(this);
     this.onHover = this.onHover.bind(this);
     this.mouseLeave = this.mouseLeave.bind(this);
-    console.log(props);
   }
 
   initStrings = padding => {
-    const string = [];
-    string[5] = {
-      x1: 0,
-      x2: 1,
-      y:  padding
-    };
-    for(let s=0; s<6; ++s) {
-      //consolelog(s);
-      string[s] = {
+    return R.map(
+      s => ({
         x1: 0,
         x2: 1,
-        y: string[5].y + s*((1-2*padding)/5)
-      };
-    }
-    return string;
+        y: padding + s * ((1 - 2 * padding) / 5)
+      }),
+      R.range(0, 6)
+    );
   }
 
-  onClick(evt){
-    this.props.onClick(this.props.barNumber,
-                       this.nearestStringToMouse(evt),
-                       this.xPositionOfEvt(evt));
-  }
+  onClick = evt => this.props.onClick(
+    this.props.barNumber,
+    this.nearestStringToMouse(evt),
+    this.xPositionOfEvt(evt)
+  )
 
-  onHover(evt){
+  onHover = evt => {
     const string = this.nearestStringToMouse(evt);
     if(this.state.hoveredString!==string) {
       this.setState({
@@ -58,32 +49,29 @@ class TabBar extends Component {
     }
   }
 
-  xPositionOfEvt = (evt) => {
-    var e = evt.target;
-    var dim = this.svgRef.current.getBoundingClientRect();
-    return (evt.clientX - dim.left)/this.svgRef.current.clientWidth;
+  xPositionOfEvt = evt => {
+    const {left} = this.svgRef.current.getBoundingClientRect();
+    return (evt.clientX - left)/this.svgRef.current.clientWidth;
   }
 
-  nearestStringToMouse = (evt) => {
-    var e = evt.target;
-    var dim = this.svgRef.current.getBoundingClientRect();
-    var x = (evt.clientX - dim.left)/this.svgRef.current.clientWidth;
-    var y = (evt.clientY - dim.top)/this.svgRef.current.clientHeight;
-    // console.log(this.props.barNumber);
-    //    console.log("x: "+x+" y:"+y);
+  nearestStringToMouse = evt => {
+    const {// left,
+         top} = this.svgRef.current.getBoundingClientRect();
+//    var x = (evt.clientX - left)/this.svgRef.current.clientWidth;
+    const y = (evt.clientY - top)/this.svgRef.current.clientHeight;
     return this.stringClosestToY(y);
   }
 
-  stringClosestToY = (y) => {
+  stringClosestToY = y => {
     const strings = this.state.stringPositions;
-    if (y<strings[0].y){
+    if(y < strings[0].y){
       return 0;
     }
-    for(let s=0; s<5; ++s) {
+    for(let s = 0; s < 5; ++s) {
       const sY = strings[s].y;
       const s1Y = strings[s+1].y;
-      if (y>sY && !(y>s1Y)){
-        const topOrBot = this.closestBetweenTwo(y,sY,s1Y);
+      if (y > sY && !(y > s1Y)){
+        const topOrBot = this.closestBetweenTwo(y, sY, s1Y);
         return s+topOrBot;
       }
     }
@@ -91,8 +79,8 @@ class TabBar extends Component {
   }
 
   closestBetweenTwo = (y, sY, s1Y) => {
-    const midPoint = sY + ((s1Y-sY)/2);
-    if (y>midPoint){
+    const midPoint = sY + ((s1Y - sY) / 2);
+    if (y > midPoint){
       return 1;
     } else {
       return 0;
@@ -103,65 +91,67 @@ class TabBar extends Component {
     this.setState({hoveredString:undefined});
   }
 
-  notesDisplay = () => {
-    notesForString = notesForString.bind(this);
-    noteJSX = noteJSX.bind(this);
+  text = (text, x, y, size) => (
+    <React.Fragment>
+      <text
+        fontSize={size}
+        textAnchor="start"
+        x={x} y={y}
+        style={{
+          stroke: "white",
+          strokeWidth: "0.3em"
+        }}
+      >
+        {text}
+      </text>
+      <text
+        fontSize={size}
+        textAnchor="start"
+        x={x} y={y}
+        style={{
+          fill: "black"
+        }}
+      >
+        {text}
+      </text>
+    </React.Fragment>
+  )
+
+  notesDisplay = _ => {
     const{bar} = this.props;
-    const notesJSX = [];
-    const numberOfStrings = bar.length;
-    for(let s=0; s<numberOfStrings; ++s){
-      var string = s;
-      notesJSX.push(notesForString(bar[s]));
-    }
+    const notesForString = (notes, strNum) => R.map(this.noteJSX(strNum), notes);
+    const notesJSX = R.addIndex(R.map)(notesForString, bar);
     return notesJSX;
+  }
 
-    function notesForString(string) {
-      return string.map(note => noteJSX(note));
-    }
-
-    function noteJSX({note, x}) {
-      const height = 0.07, width = note.length * 0.7*height;
-      return text(note, x, this.state.stringPositions[string].y + height/3, height);
-    }
-
-    function text(text, x, y, size) {
-      return (
-        <React.Fragment>
-          <text fontSize={size}
-                textAnchor="start"
-                x={x} y={y}
-                style={{
-                  stroke: "white",
-                  strokeWidth: "0.3em"
-                }}>
-            {text}
-          </text>
-          <text fontSize={size}
-                textAnchor="start"
-                x={x} y={y}
-                style={{
-                  fill: "black"
-                }}>
-            {text}
-          </text>
-        </React.Fragment>
-      );
-    }
+  noteJSX = string => ({note, x}) => {
+    const height = 0.07;
+    //      const width = note.length * 0.7 * height;
+    return this.text(
+      note,
+      x,
+      this.state.stringPositions[string].y + height/3,
+      height
+    );
   }
 
   render() {
     const {classes} = this.props;
     return (
-      <div className={this.props.className || classes.root}
-           ref={this.rootElem}
-           style={this.props.style}>
+      <div
+        className={this.props.className || classes.root}
+        ref={this.rootElem}
+        style={this.props.style}
+      >
         <svg
           onClick={this.onClick}
           onMouseOver={this.onHover}
           onMouseMove={this.onHover}
           onMouseLeave={this.mouseLeave}
           ref={this.svgRef}
-          viewBox={`0 0 1 1`} xmlns="http://www.w3.org/2000/svg">
+          viewBox={`0 0 1 1`}
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <g>
             <title>background</title>
             <rect
@@ -197,10 +187,10 @@ class TabBar extends Component {
                   stroke={
                     this.state.hoveredString===number ? '#F66' : '#000'
                   }
-                  fill="non"/>
+                  fill="non"
+                />
               )
-            )
-            }
+            )}
             <line
               y1={this.state.stringPositions[5].y}
               y2={this.state.stringPositions[0].y}
@@ -212,7 +202,7 @@ class TabBar extends Component {
           </g>
           <g>
             <title>notes</title>
-            { this.notesDisplay() }
+            {this.notesDisplay()}
           </g>
         </svg>
       </div>

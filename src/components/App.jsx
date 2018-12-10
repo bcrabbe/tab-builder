@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TabBar from './TabBar.jsx';
 import FretBoard from './FretBoard.jsx';
 import Scraper from './Scraper/Scraper.jsx';
 import { withStyles } from '@material-ui/core/styles';
-import Slider from '@material-ui/lab/Slider';
+//import Slider from '@material-ui/lab/Slider';
 import Scalometer from './Scalometer.jsx';
 import classnames from 'classnames';
 

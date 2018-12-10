@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import BackedText from './BackedText.jsx';
 import classnames from 'classnames';
 
-const STROKE_WIDTH = 0.0007;
+const STROKE_WIDTH = 0.0004;
 
 class FretBoard extends Component {
   /**
@@ -66,7 +66,6 @@ class FretBoard extends Component {
       ...this.state,
       fontSize: 0.66 * this.state.fretSpacing
     };
-    console.log(this.state);
   }
 
   positioningUtils = _ => {
@@ -87,8 +86,13 @@ class FretBoard extends Component {
       R.pipe(yOfFretOfNote, R.flip(R.subtract)(fretSpacing * 0.3)),
       R.compose(yForFret, R.dec, fretOfNote)
     );
-    const labelPositionForNote = n => yOfFretAboveNote(n) +
-          (yOfFretOfNote(n) - yOfFretAboveNote(n)) / 2;
+    const labelPositionForNote = R.ifElse(
+      R.pipe(fretOfNote, R.equals(0)),
+      n => yOfFretAboveNote(n) + STROKE_WIDTH +
+        (yOfFretOfNote(n) - yOfFretAboveNote(n)) / 2,
+      n => yOfFretAboveNote(n) +
+        (yOfFretOfNote(n) - yOfFretAboveNote(n)) / 2
+    );
     return {
       yForFret,
       fretOfNote,
@@ -108,8 +112,8 @@ class FretBoard extends Component {
   findFretsInNotes = _ => {
     const {notes} = this.props;
     const initAcc = {
-      min:24,
-      max:0
+      min: 24,
+      max: 0
     };
     return R.reduce(
       (acc, string) => R.reduce(
@@ -135,7 +139,7 @@ class FretBoard extends Component {
   }
 
   fretPositions = _ => {
-    const {X, Y, padding, fretsToDisplay} = this.state;
+    const {Y, padding, fretsToDisplay} = this.state;
     const heightFretboard = Y - padding.top - padding.bottom;
     const numberOfFrets = fretsToDisplay.max - fretsToDisplay.min + 1;
     const yForFret = f => padding.top +
@@ -167,7 +171,8 @@ class FretBoard extends Component {
   fretJSX = fret => {
     return (
       <line
-        y2={this.state.frets[fret]} y1={this.state.frets[fret]}
+        y1={this.state.frets[fret]}
+        y2={this.state.frets[fret]}
         x1={this.state.strings[0]}
         x2={this.state.strings[this.state.strings.length-1]}
         className={classnames(
@@ -189,8 +194,6 @@ class FretBoard extends Component {
   }
 
   notesJSX = _ => {
-    const {notes, classes} = this.props;
-    const {strings, frets} = this.state;
     const stringReducer = (acc, [string, notes]) => R.concat(
       acc,
       R.map(this.noteJSX(string), notes),
@@ -199,17 +202,17 @@ class FretBoard extends Component {
   }
 
   textLabel = (x, y, string, note) => {
-    const {notes, classes} = this.props;
-    const {fretOfNote} = this.state.positioningUtils;
+    const {classes} = this.props;
+    const {positioningUtils:{fretOfNote}, fontSize} = this.state;
     return (
       <BackedText
-        fontSize={this.state.fontSize}
+        fontSize={fontSize}
         key={`${string}${fretOfNote(note)}`}
         x={x}
         y={y}
         className={classes.noteLabel}
         style={{
-          fontSize: this.state.fontSize,
+          fontSize: fontSize,
         }}
       >
         {R.prop('label', note) || fretOfNote(note)}
@@ -218,16 +221,12 @@ class FretBoard extends Component {
   }
 
   noteJSX = R.curry((string, note) => {
-    const {strings, frets} = this.state;
-    const {notes, classes} = this.props;
     const {
-      fretOfNote,
-      labelPositionForNote
-    } = this.state.positioningUtils;
+      strings,
+      positioningUtils:{fretOfNote, labelPositionForNote}
+    } = this.state;
     const x = strings[string],
           y = labelPositionForNote(note);
-
-    const key = R.concat([string], [fretOfNote(note)]);
     const labelJSX = this.props.labelRenderer ?
           this.props.labelRenderer(x, y, string, note):
           this.textLabel(x, y, string, note);
@@ -242,9 +241,9 @@ class FretBoard extends Component {
   })
 
   noteCircleJSX = (string, note) => {
-    const {strings, frets} = this.state;
-    const {notes, classes} = this.props;
-    const {yForFret, yOfFretOfNote, labelPositionForNote} = this.state.positioningUtils;
+    const {strings} = this.state;
+    const {classes} = this.props;
+    const {labelPositionForNote} = this.state.positioningUtils;
     return (
       <cirle
         xmlns="http://www.w3.org/2000/svg"
@@ -257,7 +256,7 @@ class FretBoard extends Component {
 
   render() {
     const {classes} = this.props;
-    const {X, Y, padding, numberOfStrings} = this.state;
+    const {X, Y} = this.state;
     const canvasCoords = {
       x: 0,
       y: 0,
@@ -292,17 +291,17 @@ const styles = theme => ({
   root: {
   },
   strings: {
-    strokeWidth: STROKE_WIDTH+'rem',
+    strokeWidth: STROKE_WIDTH + 'rem',
     stroke: "#000",
     fill: "none"
   },
   fret: {
-    strokeWidth: STROKE_WIDTH+'rem',
+    strokeWidth: STROKE_WIDTH + 'rem',
     stroke: "#000",
     fill: "none"
   },
   zeroFret: {
-    strokeWidth: `${2*STROKE_WIDTH}rem`,
+    strokeWidth: `${2 * STROKE_WIDTH}rem`,
   },
   background: {
     fill: "#fff"

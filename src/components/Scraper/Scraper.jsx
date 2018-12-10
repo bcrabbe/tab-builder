@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import TabDisplay from '../TabDisplay.jsx';
 import Parser from './parser.js';
-import testTab2 from './testRaw.json';
 
 const styles = theme => ({
   root: {
@@ -151,15 +150,17 @@ class App extends Component {
     return (
       <input
         type="submit"
-        onClick={(e) =>{
-          const {testTab, parsed} = this.state.parser.test2();
-          this.setState({tab:testTab});
-        }}
+        onClick={this.parserTestButtonOnClick}
         value="hereComestheblues test"
       />
     );
   }
-  
+
+  parserTestButtonOnClick = e => {
+    const {testTab} = this.state.parser.test2();
+    this.setState({tab:testTab});
+  }
+
   render() {
     const {classes} = this.props;
     return (
