@@ -11,51 +11,49 @@ const getNotes = root => {
   return rotate(rootInd, notes);
 };
 
-
-const rotate = R.curry((rotateBy, list) => {
+const rotate = (rotateBy, list) => {
   const {length} = list;
   return R.addIndex(R.map)(
     (item, index) => list[Math.abs((index + rotateBy) % length)],
     list
   );
-});
-
-// const getIntervals = scale => R.addIndex(R.map)(
-//   (n, i) => i===0 ? 0 : n - scale[i-1],
-//   scale
-// );
+};
 
 const Scalometer = props => {
   const {className, classes, root, tuning, scale} = props;
-//  const notes = getNotes(root);
-  // const notesInScale = R.map(
-  //   i => notes[i % notes.length],
-  //   scale
-  // );
-//  const intervals = getIntervals(scale);
-  const strings = R.addIndex(R.map)(
+  const strings = R.addIndex(R.map) (
     (noteAt0, stringIndex) => {
-  //    const offset = notes.indexOf(noteAt0);
       const notesForString = getNotes(noteAt0);
       const fretOfRoot = notesForString.indexOf(root);
-      return R.map(
-        pos => {
+      console.log("string",  stringIndex);
+      return R.reduce(
+        (acc, pos) => {
           const fret = (fretOfRoot + pos) % 12;
-          return {
+          console.log(pos, fret, notesForString[fret]);
+          let labels = [{
             fret,
-            label: notesForString[fret]
-          };
+            label: notesForString[fret % 12]
+          }];
+          if(fret === 0) {
+            labels = R.append({
+              fret: 12,
+              label: notesForString[fret % 12]
+            }, labels);
+          }
+          return R.concat(labels, acc);
         },
+        [],
         scale
       );
     },
     tuning
   );
+  console.log(strings);
   return (
     <FretBoard
-      notes={strings}
-      classes={classes}
       className={classnames(className, classes.root)}
+      classes={classes}
+      notes={strings}
     />
   );
 };

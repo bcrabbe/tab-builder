@@ -89,16 +89,19 @@ class App extends Component {
       <div className={classnames(className, classes.root)}>
          {this.state.chords.map(this.chordJSX)}
         <Scalometer
+          className={classes.scale}
           root='E'
           scale={[0, 3, 5, 6, 7, 10]}
           tuning="EADGBE"
         />
         <Scalometer
+          className={classes.scale}
           root='D'
           scale={[0, 3, 5, 6, 7, 10]}
           tuning="DADFAD"
         />
         <Scalometer
+          className={classes.scale}
           root='G'
           scale={[0, 3, 5, 6, 7, 10]}
           tuning="DGDGBD"
@@ -122,6 +125,9 @@ const styles = theme => ({
   chord: {
     width: "20rem",
     margin: 40
+  },
+  scale: {
+    width: "45%"
   }
 });
 
