@@ -1,13 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import FretBoard from './FretBoard.jsx';
-import Scraper from './Scraper/Scraper.jsx';
-import { withStyles } from '@material-ui/core/styles';
-//import Slider from '@material-ui/lab/Slider';
-import Scalometer from './Scalometer.jsx';
+import * as R from 'ramda';
 import classnames from 'classnames';
+import { Switch, Route } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
+import {Link} from 'react-router-dom';
+import { withStyles } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import Typography from '@material-ui/core/Typography';
+import Theme from './Theme.jsx';
+import PersistentLayout from './PersistentLayout.jsx';
+import Page from './Page.jsx';
+import FretBoard from './FretBoard.jsx';
+import Scales from './Scales.jsx';
+import Tabs from './Tabs.jsx';
+import NotFound from './NotFound.jsx';
+import Home from './Home.jsx';
+import Chords from './Chords.jsx';
 
-class App extends Component {
+class App extends React.Component {
 
   static propTypes = {
     classes: PropTypes.object.isRequired,
@@ -21,93 +33,48 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      chords: [
-        [
-          [{fret:'X'}],
-          [{fret:0}],
-          [{fret:2}],
-          [{fret:2}],
-          [{fret:2}],
-          [{fret:3}]
-        ],
-        [
-          [{fret:3}],
-          [{fret:2}],
-          [{fret:0}],
-          [{fret:0}],
-          [{fret:3}],
-          [{fret:3}]
-        ],
-        [
-          [{fret:'X'}],
-          [{fret:0}],
-          [{fret:9}],
-          [{fret:8}],
-          [{fret:7}],
-          [{fret:7}]
-        ],
-        [
-          [{fret:2}],
-          [{fret:2}],
-          [{fret:3}],
-          [{fret:4}],
-          [{fret:2}],
-          [{fret:2}]
-        ],
-        [
-          [{fret:3}],
-          [{fret:3}],
-          [{fret:4}],
-          [{fret:5}],
-          [{fret:5}],
-          [{fret:3}]
-        ],
-        [
-          [{fret:0},],
-          [{fret:'X'}],
-          [{fret:10}],
-          [{fret:2}],
-          [{fret:5}],
-          [{fret:3}]
-        ]
-      ]
+
     };
   }
-
-  chordJSX = (notes, i) => (
-    <FretBoard
-      key={i}
-      className={this.props.classes.chord}
-      notes={notes}
-    />
-  )
 
   render() {
     const {classes, className} = this.props;
     //consolelog(this.state.barWidth);
     return (
-      <div className={classnames(className, classes.root)}>
-         {this.state.chords.map(this.chordJSX)}
-        <Scalometer
-          className={classes.scale}
-          root='E'
-          scale={[0, 3, 5, 6, 7, 10]}
-          tuning="EADGBE"
-        />
-        <Scalometer
-          className={classes.scale}
-          root='D'
-          scale={[0, 3, 5, 6, 7, 10]}
-          tuning="DADFAD"
-        />
-        <Scalometer
-          className={classes.scale}
-          root='G'
-          scale={[0, 3, 5, 6, 7, 10]}
-          tuning="DGDGBD"
-        />
-        <Scraper/>
-      </div>
+      <MuiThemeProvider theme={Theme}>
+        <CssBaseline />
+        <HashRouter>
+          <PersistentLayout>
+            <Switch>
+              <Route path="/scales" render={_ => (
+                <Page>
+                  <Scales/>
+                </Page>
+              )}/>
+              <Route path="/tabs" render={_ => (
+                <Page>
+                  <Tabs/>
+                </Page>
+              )}/>
+              <Route path="/chords" render={_ => (
+                <Page>
+                  <Chords/>
+                </Page>
+              )}/>
+              <Route path="/" render={_ => (
+                <Page>
+                  <Home/>
+                </Page>
+              )}/>
+              <Route path="/" render={_ => (
+                <Page>
+                  <NotFound/>
+                </Page>
+              )}/>
+            </Switch>
+          </PersistentLayout>
+        </HashRouter>
+      </MuiThemeProvider>
     );
   }
 }
