@@ -210,6 +210,7 @@ class FretBoard extends Component {
         key={`${string}${fretOfNote(note)}`}
         x={x}
         y={y}
+        backgroundColor={this.props.theme.palette.page}
         className={classes.noteLabel}
         style={{
           fontSize: fontSize,
@@ -304,7 +305,7 @@ const styles = theme => ({
     strokeWidth: `${2 * STROKE_WIDTH}rem`,
   },
   background: {
-    fill: "#fff"
+    fill: "rgba(0,0,0,0)"
   },
   noteCircle: {
     r: "0.02rem",
@@ -316,4 +317,4 @@ const styles = theme => ({
   }
 });
 
-export default withStyles(styles)(FretBoard);
+export default withStyles(styles, {withTheme:true})(FretBoard);

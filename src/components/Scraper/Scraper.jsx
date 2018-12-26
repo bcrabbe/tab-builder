@@ -1,27 +1,11 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
 import TabDisplay from '../TabDisplay.jsx';
 import Parser from './parser.js';
+import Search from './Search.jsx';
 
-const styles = theme => ({
-  root: {
-    margin: 20,
-    borderStyle: "solid",
-    padding: 20
-  },
-  resultCard :{
-    margin: 20,
-    borderStyle: "solid",
-    padding: 20
-  },
-  tabDisplay: {
-    margin: 20,
-    borderStyle: "solid",
-    padding: 20
-  }
-});
-
-class App extends Component {
+class Scraper extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -35,15 +19,15 @@ class App extends Component {
   }
 
   search = query => {
-    fetch(this.state.serverUrl+"/search/"+query).then(
+    fetch(this.state.serverUrl + "/search/" + query).then(
       res => res.json()
     ).then(
       res => this.setState({searchResults: res})
-    ).catch(err => console.error(err));
+    ).catch(err => console.warn(err));
   }
 
   get = url => {
-    fetch(this.state.serverUrl+"/get/"+encodeURIComponent(url)).then(
+    fetch(this.state.serverUrl + "/get/" + encodeURIComponent(url)).then(
       res => res.json()
     ).then(
       res => {
@@ -51,19 +35,21 @@ class App extends Component {
         console.log(JSON.stringify(res));
         this.state.parser.parse(res.content.text);
       }
-    ).catch(err => console.error(err));
+    ).catch(err => console.warn(err));
   }
 
   displayLoadButton = url => {
     return (
-      <input type="submit"
-             onClick={(e) => this.get(url)}
-        value="Load it up" />
+      <input
+        type="submit"
+        onClick={(e) => this.get(url)}
+        value="Load it up"
+      />
     );
   }
 
   displayResultInfo = result => Object.entries(result).map(
-    ([field, value]) => (<p key={field}>{field}: {value}</p>)
+    ([field, value]) => <p key={field}> {`${field}: ${value}`}</p>
   )
 
   resultDisplay = (result, key) => (
@@ -165,16 +151,18 @@ class App extends Component {
     const {classes} = this.props;
     return (
       <div className={classes.root}>
-        <h3>Scraper</h3>
+        <Typography
+          variant={this.props.theme.typography.pageTitleVariant}
+        >
+          Scraper
+        </Typography>
+        {!this.state.tab ? (
+          <Search/>
+        ) :
+         this.backControlDisplay()
+        }
         <div>
-          {
-            !this.state.tab ? this.searchControlDisplay() :
-              this.backControlDisplay()
-          }
-        </div>
-        <div>
-          {
-            this.state.tab ? this.tabDisplay(this.state.tab) :
+          {this.state.tab ? this.tabDisplay(this.state.tab) :
               this.resultsDisplay(this.state.searchResults)
           }
         </div>
@@ -184,4 +172,15 @@ class App extends Component {
   }
 }
 
-export default withStyles(styles)(App);
+const styles = theme => ({
+  root: {
+    margin: theme.spacing.margin,
+    padding: theme.spacing.padding,
+  },
+  resultCard :{
+  },
+  tabDisplay: {
+  }
+});
+
+export default withStyles(styles, {withTheme: true})(Scraper);

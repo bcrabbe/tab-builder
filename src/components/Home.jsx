@@ -37,7 +37,7 @@ class Home extends React.PureComponent {
             <Link to={`/${route}`}>
               <Typography
                 variant='h4'
-                className={classes.subHeading}
+                className={classes.route}
               >
                 {route}
               </Typography>
@@ -52,7 +52,12 @@ class Home extends React.PureComponent {
 
 const styles = theme => ({
   root: {
-    width: '100%',
+    width: '100%'
+  },
+  route: {
+    marginLeft: theme.spacing.margin*theme.spacing.marginScale,
+    marginBottom: theme.spacing.margin*theme.spacing.marginScale,
+    marginTop: theme.spacing.margin*theme.spacing.marginScale
   }
 });
 

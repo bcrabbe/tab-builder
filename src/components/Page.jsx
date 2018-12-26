@@ -38,9 +38,13 @@ class Page extends React.PureComponent {
 
 const styles = theme => ({
   root: {
-    width: '82.5vw',
+    width: theme.spacing.pageWidth,
+    marginTop: theme.spacing.pageMarginTop,
+    marginTBottom: theme.spacing.pageMarginBottom,
+    backgroundColor: theme.palette.page,
     height: '100%',
     border: '1px solid #000',
+    boxShadow: theme.shadows[theme.defaultShadow],
     margin: 'auto'
   }
 });

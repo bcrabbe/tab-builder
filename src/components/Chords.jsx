@@ -97,7 +97,12 @@ class Chords extends React.PureComponent {
 
 const styles = theme => ({
   root: {
+    display: 'flex',
     width: '100%',
+    flexWrap: 'wrap',
+  },
+  chord: {
+    width: '60rem'
   }
 });
 

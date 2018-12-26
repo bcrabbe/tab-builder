@@ -26,11 +26,11 @@ class PersistentLayout extends React.Component {
 
   render() {
     const {classes} = this.props;
-    console.log(this.props.children);
+    console.log(this.props.theme);
     return (
       <div className={classes.root}>
         <AppBar color= 'primary' postition='static' className={classes.appBar}>
-          <Toolbar className={classes.flexContainer}>
+          <Toolbar className={classes.toolbar}>
             <Link to='/'>
               <Typography
                 variant='h4'
@@ -58,26 +58,42 @@ const styles = theme => ({
     position: 'relative',
     display: 'flex',
     width: '100%',
+    backgroundColor: theme.palette.background.dark
   },
   toolbarSpacer: theme.mixins.toolbar,
   content: {
     width: '100%',
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: theme.palette.background.light,
     minHeight: '100vh',
     height: '100%'
   },
   subHeading: {
-    color: theme.palette.secondary.light,
-    marginLeft: 3*theme.spacing.margin,
+    color: theme.palette.primary.contrastText,
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-    textDecoration: 'none'
+    textDecoration: 'none',
+    paddingBottom: theme.spacing.padding * theme.spacing.paddingScale * 2,
+    paddingTop: theme.spacing.padding * theme.spacing.paddingScale * 2,
   },
-  flexContainer: {
-    display: 'flex',
-    justifyContent: 'space-between'
+  appBar: {
+    backgroundColor: theme.palette.primary.dark,
+    boxShadow: 'none',
+    overflowY: 'visible',
+    height: 'calc(6%)'
 
+  },
+  toolbar: {
+    backgroundColor: theme.palette.primary.main,
+    display: 'flex',
+    height: 'auto',
+    justifyContent: 'space-between',
+    margin: 'auto',
+    borderLeft: `${theme.genericBorder()}`,
+    borderRight: `${theme.genericBorder()}`,
+    borderBottom: `${theme.genericBorder()}`,
+    boxShadow: theme.shadows[theme.defaultShadow],
+    width: theme.spacing.pageWidth,
   }
 });
 
