@@ -18,6 +18,7 @@ import Tabs from './Tabs.jsx';
 import NotFound from './NotFound.jsx';
 import Home from './Home.jsx';
 import Chords from './Chords.jsx';
+import GlobalContextProvider from './GlobalContextProvider.jsx';
 
 class App extends React.Component {
 
@@ -43,37 +44,39 @@ class App extends React.Component {
     return (
       <MuiThemeProvider theme={Theme}>
         <CssBaseline />
-        <HashRouter>
-          <PersistentLayout>
-            <Switch>
-              <Route path="/scales" render={_ => (
-                <Page>
-                  <Scales/>
-                </Page>
-              )}/>
-              <Route path="/tabs" render={_ => (
-                <Page>
-                  <Tabs/>
-                </Page>
-              )}/>
-              <Route path="/chords" render={_ => (
-                <Page>
-                  <Chords/>
-                </Page>
-              )}/>
-              <Route path="/" render={_ => (
-                <Page>
-                  <Home/>
-                </Page>
-              )}/>
-              <Route path="/" render={_ => (
-                <Page>
-                  <NotFound/>
-                </Page>
-              )}/>
-            </Switch>
-          </PersistentLayout>
-        </HashRouter>
+        <GlobalContextProvider>
+          <HashRouter>
+            <PersistentLayout>
+              <Switch>
+                <Route path="/scales" render={_ => (
+                  <Page>
+                    <Scales/>
+                  </Page>
+                )}/>
+                <Route path="/tabs" render={_ => (
+                  <Page>
+                    <Tabs/>
+                  </Page>
+                )}/>
+                <Route path="/chords" render={_ => (
+                  <Page>
+                    <Chords/>
+                  </Page>
+                )}/>
+                <Route path="/" render={_ => (
+                  <Page>
+                    <Home/>
+                  </Page>
+                )}/>
+                <Route path="/" render={_ => (
+                  <Page>
+                    <NotFound/>
+                  </Page>
+                )}/>
+              </Switch>
+            </PersistentLayout>
+          </HashRouter>
+        </GlobalContextProvider>
       </MuiThemeProvider>
     );
   }

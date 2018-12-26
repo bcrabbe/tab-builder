@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import * as R from 'ramda';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import TabDisplay from '../TabDisplay.jsx';
@@ -18,16 +19,10 @@ class Scraper extends Component {
     };
   }
 
-  search = query => {
-    fetch(this.state.serverUrl + "/search/" + query).then(
-      res => res.json()
-    ).then(
-      res => this.setState({searchResults: res})
-    ).catch(err => console.warn(err));
-  }
-
   get = url => {
-    fetch(this.state.serverUrl + "/get/" + encodeURIComponent(url)).then(
+    fetch(
+      `${this.state.serverUrl}/get/${encodeURIComponent(url)}`
+    ).then(
       res => res.json()
     ).then(
       res => {
@@ -106,22 +101,6 @@ class Scraper extends Component {
     );
   }
 
-  searchControlDisplay = _ => {
-    return (
-      <React.Fragment>
-        <input
-          value={this.state.query}
-          onInput={(e) => this.setState({query: e.target.value})}
-        />
-        <input
-          type="submit"
-          onClick={(e) => this.search(this.state.query)}
-          value="Search tab"
-        />
-      </React.Fragment>
-    );
-  }
-
   backControlDisplay = _ => {
     return (
       <input
@@ -147,6 +126,10 @@ class Scraper extends Component {
     this.setState({tab:testTab});
   }
 
+  updateState = R.curry((path, value) => this.setState(
+    R.assocPath(path, value)
+  ))
+
   render() {
     const {classes} = this.props;
     return (
@@ -157,7 +140,9 @@ class Scraper extends Component {
           Scraper
         </Typography>
         {!this.state.tab ? (
-          <Search/>
+          <Search
+            updateResults={this.updateState(['searchResults'])}
+          />
         ) :
          this.backControlDisplay()
         }
@@ -177,7 +162,7 @@ const styles = theme => ({
     margin: theme.spacing.margin,
     padding: theme.spacing.padding,
   },
-  resultCard :{
+  resultCard: {
   },
   tabDisplay: {
   }
