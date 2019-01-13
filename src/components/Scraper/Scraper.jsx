@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import * as R from 'ramda';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
-import TabDisplay from '../TabDisplay.jsx';
-import Parser from './parser.js';
 import Search from './Search.jsx';
+import Results from './Results.jsx';
+import Tab from './Tab.jsx';
 
 class Scraper extends Component {
   constructor(props) {
@@ -14,8 +14,6 @@ class Scraper extends Component {
       query: "",
       searchResults: [],
       tab: undefined,
-      parser: new Parser(),
-      format: false,
     };
   }
 
@@ -31,74 +29,6 @@ class Scraper extends Component {
         this.state.parser.parse(res.content.text);
       }
     ).catch(err => console.warn(err));
-  }
-
-  displayLoadButton = url => {
-    return (
-      <input
-        type="submit"
-        onClick={(e) => this.get(url)}
-        value="Load it up"
-      />
-    );
-  }
-
-  displayResultInfo = result => Object.entries(result).map(
-    ([field, value]) => <p key={field}> {`${field}: ${value}`}</p>
-  )
-
-  resultDisplay = (result, key) => (
-    <div
-      className={this.props.classes.resultCard}
-      key={key}>
-      {this.displayResultInfo(result)}
-      {this.displayLoadButton(result.url)}
-    </div>
-  )
-
-  resultsDisplay = (searchResults) => searchResults.map(
-    (result, ind) => this.resultDisplay(result, ind)
-  )
-
-  tabFormatToggle = _ => (
-    <label>
-      format
-      <input
-        type="checkbox"
-        onChange={
-          e => this.setState(prevState => ({format: !prevState.format}))
-        }
-      />
-    </label>
-  )
-
-  tabDisplay = tab => {
-    return (
-      <div className={this.props.classes.tabDisplay}>
-        {this.tabFormatToggle()}
-        {this.state.format ?
-            this.formattedTabDisplay(tab) :
-            this.rawTabDisplay(tab)
-        }
-      </div>
-    );
-  }
-
-  formattedTabDisplay = tab => {
-    const parsedTab = this.state.parser.parse(tab.content.text);
-    console.log(this.state.parser);
-    return (
-      <TabDisplay tab={parsedTab}/>
-    );
-  }
-
-  rawTabDisplay = tab => {
-    return (
-      <div>
-        <h3>Raw</h3>
-        <pre>{tab.content.text}</pre>
-      </div>
-    );
   }
 
   backControlDisplay = _ => {
@@ -139,18 +69,21 @@ class Scraper extends Component {
         >
           Scraper
         </Typography>
-        {!this.state.tab ? (
-          <Search
-            updateResults={this.updateState(['searchResults'])}
+        { !this.state.tab ? (
+          <React.Fragment>
+            <Search
+              updateResults={this.updateState(['searchResults'])}
+            />
+            <Results
+              get={this.get}
+              results={this.state.searchResults}
+            />
+          </React.Fragment>
+        ) : (
+          <Tab
+            tab={this.state.tab}
           />
-        ) :
-         this.backControlDisplay()
-        }
-        <div>
-          {this.state.tab ? this.tabDisplay(this.state.tab) :
-              this.resultsDisplay(this.state.searchResults)
-          }
-        </div>
+        )}
         {this.parserTestButton()}
       </div>
     );
@@ -162,8 +95,7 @@ const styles = theme => ({
     margin: theme.spacing.margin,
     padding: theme.spacing.padding,
   },
-  resultCard: {
-  },
+
   tabDisplay: {
   }
 });
