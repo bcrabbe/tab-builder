@@ -63,16 +63,17 @@ class App extends React.Component {
                     <Chords/>
                   </Page>
                 )}/>
-                <Route path="/" render={_ => (
+                <Route exact path="/" render={_ => (
                   <Page>
                     <Home/>
                   </Page>
                 )}/>
-                <Route path="/" render={_ => (
+                <Route path="/*" render={_ => (
                   <Page>
                     <NotFound/>
                   </Page>
                 )}/>
+
               </Switch>
             </PersistentLayout>
           </HashRouter>
