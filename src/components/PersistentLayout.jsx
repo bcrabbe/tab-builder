@@ -31,10 +31,12 @@ class PersistentLayout extends React.Component {
       <div className={classes.root}>
         <AppBar color= 'primary' postition='static' className={classes.appBar}>
           <Toolbar className={classes.toolbar}>
-            <Link to='/'>
+            <Link
+              className={classes.subHeading}
+              to='/'
+            >
               <Typography
                 variant='h4'
-                className={classes.subHeading}
               >
                 {"< tab-builder >"}
               </Typography>

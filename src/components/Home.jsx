@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import * as R from 'ramda';
 import classnames from 'classnames';
-import {Link} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 
 class Home extends React.PureComponent {
@@ -32,19 +32,21 @@ class Home extends React.PureComponent {
           classes.root,
         )}
       >
-        {R.map(
-          route => (
-            <Link to={`/${route}`}>
-              <Typography
-                variant='h4'
-                className={classes.route}
-              >
-                {route}
-              </Typography>
-            </Link>
-          ),
-          ["tabs", "scales", "chords"]
-        )}
+        {R.map(route => (
+          <NavLink
+            className={classnames(
+              classes.link,
+            )}to={`/${route}`}
+          >
+            <Typography
+              className={classes.route}
+              variant='h4'
+            >
+              {route}
+            </Typography>
+          </NavLink>
+        ), ["tabs", "scales", "chords"])
+        }
       </div>
     );
   }
@@ -53,6 +55,9 @@ class Home extends React.PureComponent {
 const styles = theme => ({
   root: {
     width: '100%'
+  },
+  link: {
+    textDecoration: 'none',
   },
   route: {
     marginLeft: theme.spacing.margin*theme.spacing.marginScale,
