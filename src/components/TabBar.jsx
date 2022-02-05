@@ -155,7 +155,7 @@ class TabBar extends Component {
           <g>
             <title>background</title>
             <rect
-              fill="#fff"
+              fillOpacity="0"
               id="canvas_background"
               width="100%" height="100%"
               x="0" y="0"

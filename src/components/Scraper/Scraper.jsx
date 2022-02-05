@@ -59,15 +59,15 @@ class Scraper extends Component {
         </Typography>
         { !this.state.tab ? (
           <React.Fragment>
-            <Search
-              updateResults={this.updateState(['searchResults'])}
-            />
-            <Results
-              get={this.get}
-              results={this.state.searchResults}
-            />
+            {/* <Search */}
+            {/*   updateResults={this.updateState(['searchResults'])} */}
+            {/* /> */}
+            {/* <Results */}
+            {/*   get={this.get} */}
+            {/*   results={this.state.searchResults} */}
+            {/* /> */}
               <TextField
-                  label="or paste here"
+                  label="paste here"
                   value={this.state.pastedTab}
                   multiline
                   onChange={e => this.updateState(['pastedTab'], e.target.value)}
