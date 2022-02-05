@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import * as R from 'ramda';
 import { withStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
+import { TextField, Typography } from '@material-ui/core';
 import Search from './Search.jsx';
 import Results from './Results.jsx';
 import Tab from './Tab.jsx';
+import Parser from './parser.js';
+import testTab from './testRaw.json';
 
 class Scraper extends Component {
   constructor(props) {
@@ -14,6 +16,7 @@ class Scraper extends Component {
       query: "",
       searchResults: [],
       tab: undefined,
+      pastedTab: testTab.content.text
     };
   }
 
@@ -41,21 +44,6 @@ class Scraper extends Component {
     );
   }
 
-  parserTestButton = _ => {
-    return (
-      <input
-        type="submit"
-        onClick={this.parserTestButtonOnClick}
-        value="hereComestheblues test"
-      />
-    );
-  }
-
-  parserTestButtonOnClick = e => {
-    const {testTab} = this.state.parser.test2();
-    this.setState({tab:testTab});
-  }
-
   updateState = R.curry((path, value) => this.setState(
     R.assocPath(path, value)
   ))
@@ -67,7 +55,7 @@ class Scraper extends Component {
         <Typography
           variant={this.props.theme.typography.pageTitleVariant}
         >
-          Scraper
+          Tabs
         </Typography>
         { !this.state.tab ? (
           <React.Fragment>
@@ -78,13 +66,23 @@ class Scraper extends Component {
               get={this.get}
               results={this.state.searchResults}
             />
+              <TextField
+                  label="or paste here"
+                  value={this.state.pastedTab}
+                  multiline
+                  onChange={e => this.updateState(['pastedTab'], e.target.value)}
+              />
+              <input
+                  type="submit"
+                  onClick={(e) => this.setState(({ pastedTab }) => ({tab: { content: { text: pastedTab }}}))}
+                  value="parse"
+              />
           </React.Fragment>
         ) : (
           <Tab
             tab={this.state.tab}
           />
         )}
-        {this.parserTestButton()}
       </div>
     );
   }

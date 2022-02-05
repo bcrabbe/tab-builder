@@ -120,7 +120,7 @@ export default class Parser {
     const test = new Parser();
     return {
       testTab,
-      parsed:test.parse(testTab.content.text)
+      parsed: test.parse(testTab.content.text)
     };
   }
 
